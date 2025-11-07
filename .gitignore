@@ -67,3 +67,4 @@ web-build/
 
 # iOS
 ios.expo/
+.expo/
