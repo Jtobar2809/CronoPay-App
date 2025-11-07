@@ -66,4 +66,4 @@ web-build/
 .env
 
 # iOS
-ios
+ios.expo/
