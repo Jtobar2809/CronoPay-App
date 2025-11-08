@@ -6,6 +6,7 @@ import { cn } from "@/utils/cn"
 
 const countries = [
   "United Kingdom",
+  "Colombia",
   "France",
   "United States",
   "China",

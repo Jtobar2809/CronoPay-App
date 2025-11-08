@@ -18,21 +18,21 @@ export default function Page() {
         </View>
         <View className="flex-1 px-4">
           <Text className="mt-1 text-[28px] font-bold text-[#132F38]">
-            What kind of account would you like to open?
+            ¿Qué tipo de cuenta deseas abrir?
           </Text>
           <Text className="mt-2 text-[13px] font-medium text-neutral-600">
-            You will be able to add new accounts later on.
+            Más adelante podrás agregar nuevas cuentas.
           </Text>
           <View className="flex-1">
             <AccountCard
               image={require("@/assets/personal_account.png")}
               title="Personal Account"
-              description="Send, spend, receive and exchange your money freely."
+              description="Envía, gasta, recibe e intercambia tu dinero libremente."
             />
             <AccountCard
               image={require("@/assets/business_account.png")}
               title="Business Account"
-              description="Collect invoices, do freelance or business work internationally"
+              description="Cobra facturas, trabaja como freelance o gestiona tu negocio internacionalmente."
             />
           </View>
         </View>

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons"
-import { router } from "expo-router"
+import { router, useLocalSearchParams } from "expo-router"
 import { useState } from "react"
 import { Pressable, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -10,7 +10,12 @@ import { cn } from "@/utils/cn"
 export default function Page() {
   const [oneTimePassword, setOneTimePassword] = useState("")
 
-  const isValid = oneTimePassword.length === 6
+  const { phone, country } = useLocalSearchParams<{
+    phone?: string
+    country?: string
+  }>()
+
+  const isValid = true
 
   return (
     <View className="flex-1 bg-neutral-50 pb-7 pt-1">
@@ -28,7 +33,7 @@ export default function Page() {
             Verify your phone number
           </Text>
           <Text className="mt-2 text-[13px] font-medium text-neutral-600">
-            Please enter the code we sent to +4472323121
+            Please enter the code we sent to {country ?? ""} {phone ?? ""}
           </Text>
           <View className="flex-1 pt-6">
             <PinInput code={oneTimePassword} setCode={setOneTimePassword} />

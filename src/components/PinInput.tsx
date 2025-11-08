@@ -69,8 +69,10 @@ const PinInput = ({ code, setCode }: PinInputProps) => {
         </View>
       </Pressable>
       <TextInput
-        className="absolute opacity-0"
+        className="absolute"
+        style={{ position: "absolute", opacity: 0, height: 40, width: 1 }}
         ref={inputRef}
+        autoFocus
         value={code}
         onChangeText={setCode}
         maxLength={maximumLength}

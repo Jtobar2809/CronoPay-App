@@ -7,6 +7,7 @@ import { cn } from "@/utils/cn"
 
 const countries = [
   "United Kingdom",
+  "Colombia",
   "France",
   "United States",
   "China",
@@ -66,7 +67,11 @@ export default function Page() {
               "h-12 w-full items-center justify-center rounded-xl",
               "bg-primary-500",
             )}
-            onPress={() => router.push("/enter-phone-number")}
+            onPress={() =>
+              router.push({
+                pathname: "/enter-phone-number",
+              })
+            }
           >
             <Text className="text-[16px] font-bold text-white">Continue</Text>
           </Pressable>

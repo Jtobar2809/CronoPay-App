@@ -1,13 +1,16 @@
 import { Ionicons } from "@expo/vector-icons"
-import { router } from "expo-router"
+import { router, useLocalSearchParams } from "expo-router"
 import { useState } from "react"
 import { Pressable, Text, TextInput, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 import { cn } from "@/utils/cn"
+import { countryCodes } from "@/utils/countryCodes"
 
 export default function Page() {
   const [mobileNumber, setMobileNumber] = useState("")
+  const params = useLocalSearchParams<{ country?: string }>()
+  const selectedCountry = params.country ?? "Colombia"
 
   const isValid = mobileNumber.length !== 0
 
@@ -44,7 +47,8 @@ export default function Page() {
               </Text>
               <View className="space-between mt-1 flex-row">
                 <Text className="text-[16px] font-bold text-primary-800">
-                  🇬🇧+44
+                  {countryCodes[selectedCountry].flag}
+                  {countryCodes[selectedCountry].code}
                 </Text>
               </View>
             </View>
@@ -77,7 +81,12 @@ export default function Page() {
               "h-12 w-full items-center justify-center rounded-xl",
               isValid ? "bg-primary-500" : "bg-neutral-200",
             )}
-            onPress={() => router.push("/enter-one-time-password")}
+            onPress={() =>
+              router.push({
+                pathname: "/enter-one-time-password",
+                params: { phone: mobileNumber, country: selectedCountry },
+              })
+            }
           >
             <Text className="text-[16px] font-bold text-white">Continue</Text>
           </Pressable>
