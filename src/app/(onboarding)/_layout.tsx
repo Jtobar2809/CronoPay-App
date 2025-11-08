@@ -6,22 +6,22 @@ import { ActivityIndicator, Alert } from "react-native"
 import { supabase } from "@/supabase"
 
 export default function Layout() {
-  const [isLoading, setIsLoading] = useState(true)
+  // const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    const redirectIfUnauthenticated = async () => {
-      const { data, error } = await supabase.auth.getSession()
-      if (!error && data.session) {
-        setIsLoading(false)
-        return
-      }
+  // useEffect(() => {
+  //   const redirectIfUnauthenticated = async () => {
+  //     const { data, error } = await supabase.auth.getSession()
+  //     if (!error && data.session) {
+  //       setIsLoading(false)
+  //       return
+  //     }
 
-      router.replace("/welcome")
-    }
-    redirectIfUnauthenticated()
-  }, [])
+  //     router.replace("/welcome")
+  //   }
+  //   redirectIfUnauthenticated()
+  // }, [])
 
-  if (isLoading) return <ActivityIndicator />
+  // if (isLoading) return <ActivityIndicator />
 
   return <Slot />
 }

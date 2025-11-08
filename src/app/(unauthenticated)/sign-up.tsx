@@ -1,137 +1,151 @@
-import { Ionicons } from "@expo/vector-icons"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { makeRedirectUri } from "expo-auth-session"
-import { Link, router } from "expo-router"
-import { Controller, useForm } from "react-hook-form"
+import { router } from "expo-router"
+import { useState } from "react"
 import {
-  ActivityIndicator,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
   Text,
   TextInput,
   View,
+  Pressable,
+  ActivityIndicator,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { z } from "zod"
 
-import { supabase } from "@/supabase"
-import { cn } from "@/utils/cn"
+import { supabase } from "@/supabase" // tu cliente inicializado
 
-const schema = z.object({
-  email: z.string().email(),
-})
+export default function SignUpPage() {
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [repeatPassword, setRepeatPassword] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-export default function Page() {
-  const {
-    control,
-    handleSubmit,
-    setFocus,
-    formState: { isSubmitting, isValid },
-  } = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
-    mode: "onChange",
-  })
+  const handleSignUp = async () => {
+    setIsLoading(true)
+    setError(null)
 
-  const signUp = handleSubmit(async ({ email }) => {
-    const redirectURL = makeRedirectUri({})
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: redirectURL,
-      },
-    })
-
-    if (error) {
-      Alert.alert("An error occurred", error.message, [{ text: "OK" }])
+    if (password !== repeatPassword) {
+      setError("Las contraseñas no coinciden")
+      setIsLoading(false)
       return
     }
 
-    router.push({ pathname: "/confirm-email", params: { email } })
-  })
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: "com.edrickleong.smartbank://auth", // tu scheme configurado
+          data: { full_name: name },
+        },
+      })
+
+      if (error) throw error
+
+      // Navegar a pantalla de éxito
+      router.push("/sign-up-success")
+    } catch (err: any) {
+      setError(err.message ?? "Ocurrió un error")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <View className="flex-1 pb-7 pt-1">
-          <View className="h-11 w-full justify-center">
-            <Pressable
-              className="absolute left-0 top-0 h-11 w-11 items-center justify-center"
-              onPress={() => router.back()}
-            >
-              <Ionicons name="arrow-back" size={24} color="#2791B5" />
-            </Pressable>
-          </View>
-          <View className="flex-1 px-4">
-            <Text className="mt-1 text-[34px] font-bold text-[#0C212C]">
-              What's your email?
+    <SafeAreaView style={{ flex: 1, padding: 16 }}>
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}>
+          Crear cuenta
+        </Text>
+
+        <TextInput
+          placeholder="Nombre completo"
+          value={name}
+          onChangeText={setName}
+          style={{
+            borderWidth: 1,
+            borderColor: "#ccc",
+            padding: 12,
+            marginBottom: 12,
+            borderRadius: 8,
+          }}
+        />
+
+        <TextInput
+          placeholder="Correo electrónico"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+          style={{
+            borderWidth: 1,
+            borderColor: "#ccc",
+            padding: 12,
+            marginBottom: 12,
+            borderRadius: 8,
+          }}
+        />
+
+        <TextInput
+          placeholder="Contraseña"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          style={{
+            borderWidth: 1,
+            borderColor: "#ccc",
+            padding: 12,
+            marginBottom: 12,
+            borderRadius: 8,
+          }}
+        />
+
+        <TextInput
+          placeholder="Repite tu contraseña"
+          secureTextEntry
+          value={repeatPassword}
+          onChangeText={setRepeatPassword}
+          style={{
+            borderWidth: 1,
+            borderColor: "#ccc",
+            padding: 12,
+            marginBottom: 12,
+            borderRadius: 8,
+          }}
+        />
+
+        {error && (
+          <Text style={{ color: "red", marginBottom: 12 }}>{error}</Text>
+        )}
+
+        <Pressable
+          onPress={handleSignUp}
+          disabled={isLoading}
+          style={{
+            backgroundColor: isLoading ? "#ccc" : "#2791B5",
+            padding: 16,
+            borderRadius: 8,
+            alignItems: "center",
+          }}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={{ color: "#fff", fontWeight: "bold" }}>
+              Registrarse
             </Text>
-            <Text className="mt-2 text-[13px] font-medium text-neutral-600">
-              Enter the email address you’d like to use to sign in to SmartBank.
-            </Text>
-            <Controller
-              control={control}
-              name="email"
-              rules={{ required: true }}
-              render={({ field: { onChange, value, ref } }) => (
-                <TextInput
-                  autoFocus
-                  className="mt-6 h-14 w-full rounded-xl border-[1px] border-[#E7EAEB] px-3.5"
-                  textContentType="emailAddress"
-                  keyboardType="email-address"
-                  placeholder="Email address"
-                  placeholderTextColor="#2B6173"
-                  editable={!isSubmitting}
-                  value={value}
-                  onChangeText={onChange}
-                  ref={ref}
-                />
-              )}
-            />
-            <Text className="mt-4 w-full text-center text-[13px] font-bold text-primary-500">
-              {"Have an account? "}
-              <Link href="/login" className="text-primary-400">
-                Log in here.
-              </Link>
-            </Text>
-          </View>
-          <View className="px-4">
-            <Text className="mb-7 mt-4 w-full text-center text-[11px] text-black">
-              {"By registering, you accept our "}
-              <Text className="font-bold text-primary-400">
-                Terms and Conditions
-              </Text>
-              {" and "}
-              <Text className="font-bold text-primary-400 ">
-                Privacy Policy
-              </Text>
-              . Your data will be securely encrypted with TLS.
-            </Text>
-            <Pressable
-              disabled={isSubmitting}
-              className={cn(
-                "h-12 w-full flex-row items-center justify-center gap-x-2 rounded-xl",
-                isValid ? "bg-primary-500" : "bg-neutral-200",
-              )}
-              onPress={signUp}
-            >
-              <Text
-                className={cn(
-                  "text-[16px] font-bold",
-                  isValid ? "text-white" : "text-neutral-400",
-                )}
-              >
-                Continue
-              </Text>
-              {isSubmitting && <ActivityIndicator />}
-            </Pressable>
-          </View>
-        </View>
-      </KeyboardAvoidingView>
+          )}
+        </Pressable>
+
+        <Text style={{ marginTop: 16, textAlign: "center" }}>
+          ¿Ya tienes cuenta?{" "}
+          <Text
+            style={{ color: "#2791B5" }}
+            onPress={() => router.push("/login")}
+          >
+            Inicia sesión
+          </Text>
+        </Text>
+      </View>
     </SafeAreaView>
   )
 }
