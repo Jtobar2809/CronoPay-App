@@ -1,11 +1,11 @@
 import { Stack } from "expo-router"
-import { Text, View } from "react-native"
+import { Button, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 import { useAuth } from "../../../../providers/AuthProvider"
 
 export default function Page() {
-  const { loading, session } = useAuth()
+  const { loading, session, signOut } = useAuth()
 
   if (loading) {
     return (
@@ -25,6 +25,7 @@ export default function Page() {
             {session?.user?.user_metadata?.full_name ??
               session?.user?.email?.split("@")[0]}
           </Text>
+          <Button title="Cerrar sesión" onPress={signOut} />
         </View>
       </SafeAreaView>
     </>

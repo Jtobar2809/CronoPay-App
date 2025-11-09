@@ -7,11 +7,13 @@ import { supabase } from "../lib/supabase"
 type AuthData = {
   loading: boolean
   session: Session | null
+  signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthData>({
   loading: true,
   session: null,
+  signOut: async () => {},
 })
 
 interface Props {
@@ -58,8 +60,14 @@ export default function AuthProvider(props: Props) {
     }
   }, [])
 
+  const signOut = async () => {
+    await supabase.auth.signOut()
+    setSession(null)
+    router.replace("/login") // redirige al login
+  }
+
   return (
-    <AuthContext.Provider value={{ loading, session }}>
+    <AuthContext.Provider value={{ loading, session, signOut }}>
       {props.children}
     </AuthContext.Provider>
   )
