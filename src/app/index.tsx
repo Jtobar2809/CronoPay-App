@@ -8,10 +8,10 @@ export default function Page() {
       <View className="flex-1 px-4 py-7">
         <View className="flex-1">
           <Text className="text-[13px] font-medium text-neutral-600">
-            Welcome to SmartBank
+            Bienvenido a CronoPay
           </Text>
           <Text className="mt-1.5 text-[34px] font-bold text-[#0C212C]">
-            Managing your money has never been so easy
+            Gestionar tu dinero nunca ha sido tan fácil
           </Text>
           <Image
             source={require("@/assets/making-your-money.png")}
@@ -23,14 +23,14 @@ export default function Page() {
           <Link href="/(unauthenticated)/sign-up" asChild>
             <Pressable className="h-12 w-full items-center justify-center rounded-xl bg-primary-500">
               <Text className="text-[16px] font-semibold text-white">
-                Sign up
+                Registrase
               </Text>
             </Pressable>
           </Link>
           <Link href="/(unauthenticated)/login" asChild>
             <Pressable className="mt-4 h-12 w-full items-center justify-center rounded-xl bg-neutral-200">
               <Text className="text-[16px] font-semibold text-primary-500">
-                Log in
+                Iniciar Sesion
               </Text>
             </Pressable>
           </Link>
