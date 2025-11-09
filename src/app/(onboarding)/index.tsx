@@ -49,13 +49,13 @@ export default function Page() {
         </View>
         <View className="px-4">
           <Text className="mt-1 text-center text-[34px] font-bold text-white">
-            Welcome to SmartBank
+            Bienvenido a CronoPay
           </Text>
           <Text className="mb-8 mt-2 text-center text-[13px] font-medium text-neutral-300">
             Spend, save and manage your money in one place. Your money is safe
             with us.
           </Text>
-          <Link href="/choose-account-type" asChild>
+          <Link href="/protected" asChild>
             <Pressable className="mb-4 h-12 w-full items-center justify-center rounded-xl bg-[#E8F569]">
               <Text className="text-[16px] font-bold text-[#134555]">
                 Continue
