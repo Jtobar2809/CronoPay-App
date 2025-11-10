@@ -25,33 +25,24 @@ export default function AuthProvider(props: Props) {
   const [session, setSession] = useState<Session | null>(null)
 
   useEffect(() => {
-    async function fethSession() {
-      const { error, data } = await supabase.auth.getSession()
-      if (error) {
-        throw error
-      }
-
-      if (data.session) {
+    const fetchSession = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession()
+        if (error) throw error
         setSession(data.session)
-      } else {
-        router.replace("/")
+      } catch (error) {
+        console.error("Error fetching session", error)
+        setSession(null)
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
     }
 
-    fethSession()
+    fetchSession()
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (_, session) => {
-        setSession(session)
-        setLoading(false)
-
-        if (session) {
-          router.replace("/")
-        } else {
-          router.replace("/")
-        }
+      (_event, authSession) => {
+        setSession(authSession)
       },
     )
 
@@ -61,9 +52,14 @@ export default function AuthProvider(props: Props) {
   }, [])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-    setSession(null)
-    router.replace("/login") // redirige al login
+    try {
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.error("Error signing out", error)
+    } finally {
+      setSession(null)
+      router.replace("/")
+    }
   }
 
   return (

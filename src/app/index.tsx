@@ -1,8 +1,33 @@
-import { Link } from "expo-router"
-import { Image, Pressable, Text, View } from "react-native"
+import { Link, useRouter } from "expo-router"
+import { useEffect } from "react"
+import { ActivityIndicator, Image, Pressable, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 
+import { useAuth } from "../../providers/AuthProvider"
+
 export default function Page() {
+  const { loading, session } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (loading) return
+    if (session) {
+      router.replace("/(tabs)/inicio")
+    }
+  }, [loading, session, router])
+
+  if (loading) {
+    return (
+      <SafeAreaView style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator />
+      </SafeAreaView>
+    )
+  }
+
+  if (session) {
+    return null
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View className="flex-1 px-4 py-7">

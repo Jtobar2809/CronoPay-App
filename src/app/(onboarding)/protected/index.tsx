@@ -20,7 +20,7 @@ export default function Page() {
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView className="flex-1 bg-[#faedcd]">
         <View className="flex-1 items-center justify-center">
-          <Text className="font-medium text-[#838383]">Welcome,</Text>
+          <Text className="font-medium text-[#838383]">Bienvenido,</Text>
           <Text className="text-lg font-bold text-[#7f4f24]">
             {session?.user?.user_metadata?.full_name ??
               session?.user?.email?.split("@")[0]}

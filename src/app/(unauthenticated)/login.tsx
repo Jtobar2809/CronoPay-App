@@ -30,8 +30,8 @@ export default function LoginPage() {
 
       if (error) throw error
 
-      // Si todo va bien, navega al Home o ruta protegida
-      router.replace("/(onboarding)")
+  // Si todo va bien, navega al sistema de pestañas protegido
+  router.replace("/(tabs)/inicio")
     } catch (err: any) {
       setError(err.message ?? "Ocurrió un error")
     } finally {
@@ -99,7 +99,7 @@ export default function LoginPage() {
           ¿No tienes cuenta?{" "}
           <Text
             style={{ color: "#2791B5" }}
-            onPress={() => router.push("/sign-up")}
+            onPress={() => router.push("/(unauthenticated)/sign-up")}
           >
             Regístrate
           </Text>
