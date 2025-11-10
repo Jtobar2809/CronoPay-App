@@ -1,12 +1,25 @@
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { Tabs, useRouter } from "expo-router"
-import { useEffect } from "react"
+import { useEffect, type ComponentProps } from "react"
 import { Text } from "react-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { useAuth } from "../../../providers/AuthProvider"
+import AppHeader from "../../components/AppHeader"
+import { useUsuarioPerfil } from "../../hooks/useUsuarioPerfil"
 
 const ACTIVE_COLOR = "#0C212C"
 const INACTIVE_COLOR = "#94A5AB"
+
+type IconName = ComponentProps<typeof Ionicons>["name"]
+
+const TAB_CONFIG: Record<string, { title: string; icon: IconName }> = {
+  pagos: { title: "Pagos", icon: "card-outline" },
+  calendario: { title: "Calendario", icon: "calendar-outline" },
+  inicio: { title: "Inicio", icon: "home-outline" },
+  estadisticas: { title: "Estadísticas", icon: "stats-chart-outline" },
+  reportes: { title: "Reportes", icon: "document-text-outline" },
+}
 
 function TabLabel({ focused, label }: { focused: boolean; label: string }) {
   return (
@@ -25,6 +38,9 @@ function TabLabel({ focused, label }: { focused: boolean; label: string }) {
 export default function TabsLayout() {
   const { loading, session } = useAuth()
   const router = useRouter()
+  const userId = session?.user?.id ?? null
+  const { data: perfil } = useUsuarioPerfil(userId)
+  const insets = useSafeAreaInsets()
 
   useEffect(() => {
     if (loading) return
@@ -39,24 +55,35 @@ export default function TabsLayout() {
 
   return (
     <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: ACTIVE_COLOR,
-        tabBarInactiveTintColor: INACTIVE_COLOR,
-        tabBarStyle: {
-          height: 78,
-          paddingTop: 8,
-          paddingBottom: 12,
-          borderTopWidth: 0,
-          shadowColor: "#000",
-          shadowOpacity: 0.05,
-          shadowRadius: 8,
-          elevation: 6,
-          backgroundColor: "#FFFFFF",
-        },
-        tabBarItemStyle: {
-          paddingVertical: 4,
-        },
+      screenOptions={({ route }) => {
+        const config = TAB_CONFIG[route.name] ?? TAB_CONFIG.inicio
+        return {
+          headerShown: true,
+          header: () => (
+            <AppHeader
+              icon={config.icon}
+              title={config.title}
+              profileUri={perfil?.avatar_url ?? undefined}
+              topInset={insets.top}
+            />
+          ),
+          tabBarActiveTintColor: ACTIVE_COLOR,
+          tabBarInactiveTintColor: INACTIVE_COLOR,
+          tabBarStyle: {
+            height: 70 + insets.bottom,
+            paddingTop: 8,
+            paddingBottom: 12 + insets.bottom,
+            borderTopWidth: 0,
+            shadowColor: "#000",
+            shadowOpacity: 0.05,
+            shadowRadius: 8,
+            elevation: 6,
+            backgroundColor: "#FFFFFF",
+          },
+          tabBarItemStyle: {
+            paddingVertical: 4,
+          },
+        }
       }}
     >
       <Tabs.Screen
