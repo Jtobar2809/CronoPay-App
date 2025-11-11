@@ -1,14 +1,10 @@
 import { Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-
-import AppHeader from "../../components/AppHeader"
-import { useUsuarioPerfil } from "../../hooks/useUsuarioPerfil"
 import { useAuth } from "../../../providers/AuthProvider"
 
 export default function ReportesScreen() {
   const { session } = useAuth()
   const userId = session?.user?.id ?? null
-  const { data: perfil } = useUsuarioPerfil(userId)
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-50">

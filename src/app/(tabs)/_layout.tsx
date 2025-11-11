@@ -17,7 +17,7 @@ const TAB_CONFIG: Record<string, { title: string; icon: IconName }> = {
   pagos: { title: "Pagos", icon: "card-outline" },
   calendario: { title: "Calendario", icon: "calendar-outline" },
   inicio: { title: "Inicio", icon: "home-outline" },
-  estadisticas: { title: "Estadísticas", icon: "stats-chart-outline" },
+  estadisticas: { title: "Panel de Estadísticas", icon: "stats-chart-outline" },
   reportes: { title: "Reportes", icon: "document-text-outline" },
 }
 
