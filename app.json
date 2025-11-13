@@ -4,7 +4,7 @@
     "slug": "cronopay-app",
     "scheme": "com.cronopay.app",
     "userInterfaceStyle": "light",
-    "icon": "./src/assets/CronoPayLogo.svg",
+    "icon": "./src/assets/CronoPayLogo.png",
     "ios": {
       "bundleIdentifier": "com.cronopay.app"
     },
@@ -17,7 +17,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "c506a387-7497-438c-89ea-2f690fe3fb44"
+        "projectId": "1184059c-9ccd-4681-bca9-49b9e2328614"
       }
     }
   }

@@ -1,4 +1,5 @@
 //src/app/_layout.tsx
+import 'react-native-get-random-values'
 import "@/global.css"
 import { useFonts } from "expo-font"
 import { Slot } from "expo-router"
