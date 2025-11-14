@@ -1,31 +1,35 @@
-// app/(onboarding)/perfil/_layout.tsx
-import { Stack } from "expo-router"
+//src/app/_layout.tsx
+import 'react-native-get-random-values'
+import "@/global.css"
+import { useFonts } from "expo-font"
+import { Slot } from "expo-router"
+import * as SplashScreen from "expo-splash-screen"
+import * as WebBrowser from "expo-web-browser"
+import React, { useEffect } from "react"
 
-export default function PerfilLayout() {
+import AuthProvider from "../../providers/AuthProvider"
+
+WebBrowser.maybeCompleteAuthSession()
+
+SplashScreen.preventAutoHideAsync()
+
+export default function Layout() {
+  const [loaded] = useFonts({
+    Roboto: require("@/assets/fonts/Roboto-Medium.ttf"),
+    RobotoBold: require("@/assets/fonts/Roboto-Bold.ttf"),
+  })
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync()
+    }
+  }, [loaded])
+
+  if (!loaded) return null
+
   return (
-    <Stack>
-      <Stack.Screen
-        name="index"
-        options={{
-          title: "Perfil y Configuración",
-          headerShadowVisible: false,
-          headerStyle: {
-            backgroundColor: '#fff',
-          },
-          headerTintColor: '#1B3D48',
-        }}
-      />
-      <Stack.Screen
-        name="editar"
-        options={{
-          title: "Editar Perfil",
-          headerShadowVisible: false,
-          headerStyle: {
-            backgroundColor: '#fff',
-          },
-          headerTintColor: '#1B3D48',
-        }}
-      />
-    </Stack>
+    <AuthProvider>
+      <Slot />
+    </AuthProvider>
   )
 }
