@@ -8,12 +8,13 @@
     "ios": {
       "bundleIdentifier": "com.cronopay.app"
     },
-    "plugins": [
-      "expo-router"
-    ],
     "android": {
       "package": "com.cronopay.app"
     },
+    "plugins": [
+      "@react-native-google-signin/google-signin",
+      "expo-router"
+    ],
     "extra": {
       "router": {},
       "eas": {
