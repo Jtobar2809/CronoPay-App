@@ -11,7 +11,6 @@ import MonthYearSelector, {
 } from "../../components/MonthYearSelector"
 import PaymentsList, { type PaymentItem } from "../../components/PaymentsList"
 import { useMemo, useState } from "react"
-import type { PagoWithRelations } from "../../../lib/api"
 
 // Colores para las categorías
 const CATEGORY_COLORS = ["#0F5B5C", "#12C48B", "#FFB020", "#7C4DFF", "#FF6B6B", "#3AA9FF"]
