@@ -31,11 +31,15 @@ Se enfoca en flujos de onboarding limpios, UI modular y estructura de proyecto m
 
 ## 📱 Flujos implementados
 
-- [x] Walkthrough / Carrusel de onboarding
 - [x] Login with google and supabase auth
 - [x] Configuración de cuenta
-- [x] Pantalla principal
-- [ ] Configuración de perfil
+- [x] Pantalla principal con reportes
+- [x] Configuración de perfil
+- [x] Pagos
+- [x] Calendario
+- [x] Estadísticas
+- [x] Reportes
+
 
 👉 Funcionalidades como **notificaciones** aún no están implementadas.
 
@@ -44,8 +48,9 @@ Se enfoca en flujos de onboarding limpios, UI modular y estructura de proyecto m
 ## ✨ Funcionalidades
 
 - [x] 🔒 Registro / Login (auth con Supabase y Google)
-- [x] 🎨 Carrusel de onboarding con imágenes
-- [ ] 💸 HOME dentro de la app con los reportes (pendiente)
+- [x] 🎨 Carrusel de onboarding con imágene
+- [x] 🏠 HOME dentro de la app con los reportes
+- [x] 💸 Funcionalidad de Gastos implementada
 
 ---
 
@@ -78,7 +83,7 @@ npm install -g bun
 git clone https://github.com/jjgalindez/cronopay-app
 ```
 
-## 2. Instalar paquetes NPM
+## 2. Instalar NPM packages
 
 ```sh
 bun install
@@ -90,9 +95,36 @@ bun install
    You will need to update your Site URL under Authentication > URL Configuration > Site URL to
    `com.cronopay.app`.
 
+   ---
 
 ## 4. Ejecuta el servidor del entorno de desarrollo
 
-```shell
-bun start
-```
+
+### 🔐 Estado funcional del inicio con Google
+
+Para evitar errores con Google Sign-In en Expo + Android, sigue estos pasos uno por uno en este orden:
+
+### ✅ Pasos para configurar correctamente Google Sign-In
+
+5. Eliminar módulos y lockfile:
+   ```sh
+   rm -rf node_modules
+   rm -rf bun.lock
+   rm -rf android
+
+   bun install
+
+   Nota: Abrir Android Studio y conectar el celular por cable al pc, o hacer un dispositivo virtual. Si es con adb entonces solo conectar al pc. (Tener la depuración por USB activada en el celular)
+
+   bun expo prebuild
+
+   Crear el archivo: local.properties 
+   dentro de la carpeta android/ y agregar:
+   sdk.dir=C:\\Users\\<usuario>\\AppData\\Local\\Android\\Sdk
+
+
+6. Run the development server
+
+    ```shell
+     bun expo run:android
+    ```
