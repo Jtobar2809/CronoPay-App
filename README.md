@@ -15,7 +15,14 @@
     <br />
 </p>
 
-![Mockup](docs/images/mockupCronoPay.png)
+
+<p align="center">
+  <img src="docs/images/mockupCronoPay.png" alt="Demo CronoPay" width="360" />
+</p>
+
+<p align="center">
+  <img src="docs/images/App.gif" alt="Demo CronoPay" width="360" />
+</p>
 
 CronoPay es una aplicación de finanzas moderna construida con Expo, NativeWind y Supabase.  
 Se enfoca en flujos de onboarding limpios, UI modular y estructura de proyecto mantenible.
