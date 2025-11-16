@@ -7,7 +7,7 @@ export default function HeroSection() {
       <View className="mb-2 flex-row items-center">
         <Image
           source={require("@/assets/CronoPayLogo.png")}
-          style={{ width: 40, height: 40, marginRight: 8 }}
+          style={{ width: 50, height: 50, marginRight: 8 }}
           resizeMode="contain"
         />
         <Text className="text-[13px] font-medium text-neutral-600">
