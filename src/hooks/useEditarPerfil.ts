@@ -45,7 +45,7 @@ export function useEditarPerfil() {
         )
       }
     }
-  }, [imagenTemporal, fotoPerfil, fotoPerfilOriginal])
+  }, [imagenTemporal, fotoPerfil, fotoPerfilOriginal, eliminarImagenAnterior])
 
   // Verificar permisos ya no es necesario con react-native-image-crop-picker
   // La librería maneja los permisos automáticamente
