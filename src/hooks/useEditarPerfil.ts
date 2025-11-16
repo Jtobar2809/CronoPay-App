@@ -47,7 +47,7 @@ export function useEditarPerfil() {
     }
   }, [imagenTemporal, fotoPerfil, fotoPerfilOriginal])
 
-  // Verificar permisos ya no es necesario con react-native-image-picker
+  // Verificar permisos ya no es necesario con react-native-image-crop-picker
   // La librería maneja los permisos automáticamente
 
   // Subir imagen a Supabase Storage
