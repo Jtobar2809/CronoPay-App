@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://github.com/jjgalindez/CronoPay-App">
-    <img src="docs/images/cronopay-logo.svg" alt="Logo" width="120" height="120">
+  <a href="https://github.com/edrickleong/smartbank">
+    <img src="src/assets/CronoPayLogo.svg" alt="Logo" width="120" height="120">
   </a>
 
 <h3 align="center">CronoPay</h3>
@@ -10,10 +10,9 @@
     <br />
     Desarrollada por <a href="https://github.com/jjgalindez">Jhon Galindez, Kedin Valencia, Jhonatan Tobar, Manuel Ruge, Jair Hoyos</a>
     <br />
+    Demo app created by <a href="#">CronoTeam</a>
     <br />
-    <a href="https://github.com/jjgalindez/CronoPay-App/issues">Reportar un bug</a>
-    ·
-    <a href="https://github.com/jjgalindez/CronoPay-App/issues">Solicitar una funcionalidad</a>
+    <br />
 </p>
 
 ![Mockup](docs/images/mockupCronoPay.png)
@@ -22,6 +21,8 @@ CronoPay es una aplicación de finanzas moderna construida con Expo, NativeWind 
 Se enfoca en flujos de onboarding limpios, UI modular y estructura de proyecto mantenible.
 
 ---
+
+## 📱 Flujos implementados
 
 ## 📱 Flujos implementados
 
@@ -39,7 +40,7 @@ Se enfoca en flujos de onboarding limpios, UI modular y estructura de proyecto m
 
 - [x] 🔒 Registro / Login (auth con Supabase y Google)
 - [x] 🎨 Carrusel de onboarding con imágene
-- [ ] 💸 hOME dentro de la app con los reportes (pendiente)
+- [ ] 💸 HOME dentro de la app con los reportes (pendiente)
 
 ---
 
@@ -49,6 +50,7 @@ Se enfoca en flujos de onboarding limpios, UI modular y estructura de proyecto m
 - [NativeWind](https://www.nativewind.dev/) – Tailwind CSS para React Native
 - [Supabase](https://supabase.com/) – Plataforma de Auth y Base de Datos
 - [Bun](https://bun.sh/) – Runtime y gestor de paquetes rápido
+## 🚀 Local Development
 
 ---
 
@@ -61,3 +63,38 @@ powershell -c "irm bun.sh/install.ps1|iex"
 #### macOS
 ```sh
 brew install bun
+```
+with NPM:
+
+```shell
+npm install -g bun
+```
+or Powershell:
+
+```shell
+powershell -c "irm bun.sh/install.ps1|iex"
+```
+1. Clone the repo
+
+```sh
+git clone https://github.com/jjgalindez/cronopay-app
+```
+
+3. Install NPM packages
+
+```sh
+bun install
+```
+
+4. Copy the `.env.example` file as a `.env` file and add the missing environment variables.
+   
+   You will need to sign up for a [Supabase account](https://supabase.com/) and create a project.
+   You will need to update your Site URL under Authentication > URL Configuration > Site URL to
+   `com.cronopay.app`.
+
+
+5. Run the development server
+
+```shell
+bun start
+```
