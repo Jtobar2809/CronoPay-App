@@ -46,11 +46,23 @@ export function getMonthName(month: number, short: boolean = false): string {
  * Calcula el número de días hasta una fecha
  */
 export function getDaysUntil(date: Date | string): number {
-  const targetDate = typeof date === "string" ? new Date(date) : date
   const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  targetDate.setHours(0, 0, 0, 0)
-  
+  // If date is a string that includes time (ISO datetime), preserve time when parsing.
+  let targetDate: Date
+  if (typeof date === "string") {
+    // detect presence of time (T separator or colon)
+    const includesTime = date.includes("T") || date.match(/\d:\d/)
+    targetDate = new Date(date)
+    if (!includesTime) {
+      // zero out time for day-based comparison
+      targetDate.setHours(0, 0, 0, 0)
+      today.setHours(0, 0, 0, 0)
+    }
+  } else {
+    targetDate = date
+    // if a Date object was passed, preserve its time
+  }
+
   const diffInMs = targetDate.getTime() - today.getTime()
   return Math.floor(diffInMs / (1000 * 60 * 60 * 24))
 }

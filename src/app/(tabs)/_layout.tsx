@@ -65,6 +65,9 @@ export default function TabsLayout() {
               title={config.title}
               profileUri={perfil?.avatar_url ?? undefined}
               topInset={insets.top}
+              variant={route.name === 'inicio' ? 'home' : 'default'}
+              userName={perfil?.nombre ?? null}
+              onNotificationsPress={() => router.push('/(onboarding)/recordatorios')}
             />
           ),
           tabBarActiveTintColor: ACTIVE_COLOR,

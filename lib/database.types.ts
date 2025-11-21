@@ -134,6 +134,7 @@ export interface Database {
         Row: {
           id_recordatorio: number
           fecha_aviso: string
+          hora: string
           mensaje: string | null
           id_pago: number
           created_at: string | null
@@ -141,6 +142,7 @@ export interface Database {
         Insert: {
           id_recordatorio?: number
           fecha_aviso: string
+          hora: string
           mensaje?: string | null
           id_pago: number
           created_at?: string | null
@@ -148,6 +150,7 @@ export interface Database {
         Update: {
           id_recordatorio?: number
           fecha_aviso?: string
+          hora?: string
           mensaje?: string | null
           id_pago?: number
           created_at?: string | null
