@@ -1,14 +1,14 @@
 import { useMemo } from "react"
 import { ScrollView, Text, View, Alert } from "react-native"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
-import PaymentsList from "../../components/PaymentsList"
-import DonutChart from "../../components/DonutChart";
 import Box from "../../components/Box"
 import { getCategoryIcon, getCategoryColor } from "../../utils/categoryHelpers"
 
 import { useAuth } from "../../../providers/AuthProvider"
 import { usePagos } from "../../hooks/usePagos"
 import Button from "@/components/Button";
+import DonutChart from "../../components/DonutChart"
+import PaymentsList from "../../components/PaymentsList"
 
 export default function InicioScreen() {
   const { session, signOut } = useAuth()
@@ -57,8 +57,8 @@ export default function InicioScreen() {
   }, [pagos])
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-50">
-      <ScrollView className="flex-1 px-6 py-10" contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-black">
+      <ScrollView className="flex-1 bg-white px-6 py-10 dark:bg-black" contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}>
         {/* Estadísticas rápidas */}
         <View
           style={{
@@ -124,18 +124,21 @@ export default function InicioScreen() {
 
         {/* Próximos vencimientos */}
         <View className="mt-6">
-          <Text className="text-lg font-semibold text-neutral-800">
+          <Text className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
             Próximos vencimientos
           </Text>
           <PaymentsList items={recentPayments} />
         </View>
 
         {/* Botón registrar nuevo pago */}
-        <Button
-          label="Registar un nuevo pago"
-          backgroundColor="green"
-          style={{ marginTop: 24, marginHorizontal: 6, marginBottom: insets.bottom > 0 ? insets.bottom : 12 }}
-        />
+        <Pressable
+          onPress={() => console.log("Registrar nuevo pago")}
+          className="mt-6 h-12 items-center justify-center rounded-xl bg-primary-500 dark:bg-primary-700"
+        >
+          <Text className="text-base font-semibold text-white dark:text-gray-100 ">
+            Registrar nuevo pago
+          </Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   )
