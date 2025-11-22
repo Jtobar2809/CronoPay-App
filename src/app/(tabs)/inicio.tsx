@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { Pressable, ScrollView, Text, View } from "react-native"
+import { ScrollView, Text, View, Alert } from "react-native"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import PaymentsList from "../../components/PaymentsList"
 import DonutChart from "../../components/DonutChart";
@@ -59,7 +59,6 @@ export default function InicioScreen() {
   return (
     <SafeAreaView className="flex-1 bg-neutral-50">
       <ScrollView className="flex-1 px-6 py-10" contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}>
-
         {/* Estadísticas rápidas */}
         <View
           style={{

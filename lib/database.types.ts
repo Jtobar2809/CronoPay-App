@@ -136,6 +136,7 @@ export interface Database {
           fecha_aviso: string
           hora: string
           mensaje: string | null
+          notification_id: string | null
           id_pago: number
           created_at: string | null
         }
@@ -144,6 +145,7 @@ export interface Database {
           fecha_aviso: string
           hora: string
           mensaje?: string | null
+          notification_id?: string | null
           id_pago: number
           created_at?: string | null
         }
@@ -152,6 +154,7 @@ export interface Database {
           fecha_aviso?: string
           hora?: string
           mensaje?: string | null
+          notification_id?: string | null
           id_pago?: number
           created_at?: string | null
         }

@@ -5,6 +5,8 @@ import { useAuth } from '../../providers/AuthProvider'
 import { usePagos } from '../hooks/usePagos'
 import useRecordatorios from '../hooks/useRecordatorios'
 import { router } from 'expo-router'
+import useNotifee from '../hooks/useNotifee'
+import { updateRecordatorio } from '../../lib/api/recordatorios'
 
 type Props = {
   onSaved?: () => void
@@ -15,6 +17,7 @@ export default function RecordatorioForm({ onSaved }: Props) {
   const userId = session?.user?.id ?? null
   const { data: pagos = [] } = usePagos(userId, { enabled: !!userId })
   const { create } = useRecordatorios()
+  const nf = useNotifee()
 
   const [selectedPagoId, setSelectedPagoId] = useState<number | null>(pagos[0]?.id_pago ?? null)
   const [fecha, setFecha] = useState<string>(() => new Date().toISOString().split('T')[0])
@@ -50,7 +53,25 @@ export default function RecordatorioForm({ onSaved }: Props) {
 
     try {
       setSubmitting(true)
-      await create({ fecha_aviso: fecha, hora, mensaje: mensaje || null, id_pago: Number(selectedPagoId) })
+      const created = await create({ fecha_aviso: fecha, hora, mensaje: mensaje || null, id_pago: Number(selectedPagoId) })
+      // created may be the new record or nothing; try to extract id
+      const recId = (created as any)?.id_recordatorio ?? (created as any)?.id ?? null
+      if (recId) {
+        function buildDateFromFechaHora(fechaStr: string, horaStr: string) {
+          const [y, m, d] = fechaStr.split('-').map(Number)
+          const [hh, mm] = horaStr.split(':').map((s) => Number(s))
+          return new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, 0)
+        }
+        const date = buildDateFromFechaHora(fecha, hora)
+        try {
+          const nid = await nf.scheduleTrigger({ title: selectedPagoTitle ?? 'Recordatorio', body: mensaje || undefined, date, smallIcon: 'ic_launcher' })
+          if (nid) {
+            await updateRecordatorio(recId, { notification_id: nid })
+          }
+        } catch (e) {
+          console.warn('No se pudo programar trigger tras crear recordatorio', e)
+        }
+      }
       onSaved?.()
       router.back()
     } catch (err: any) {
@@ -70,7 +91,11 @@ export default function RecordatorioForm({ onSaved }: Props) {
 
       <Text style={styles.label}>Fecha</Text>
       <Pressable style={styles.input} onPress={() => setShowDatePicker(true)}>
-        <Text>{new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</Text>
+        <Text>{(() => {
+          if (!fecha) return ''
+          const [y, m, d] = fecha.split('-').map(Number)
+          return new Date(y, (m || 1) - 1, d || 1).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })
+        })()}</Text>
       </Pressable>
 
       <Text style={styles.label}>Hora</Text>
@@ -109,8 +134,13 @@ export default function RecordatorioForm({ onSaved }: Props) {
           onChange={(e, selected) => {
             setShowDatePicker(Platform.OS === 'ios')
             if (selected) {
-              const iso = selected.toISOString().split('T')[0]
+              // Build ISO date from local components to avoid UTC shift
+              const y = selected.getFullYear()
+              const m = String(selected.getMonth() + 1).padStart(2, '0')
+              const d = String(selected.getDate()).padStart(2, '0')
+              const iso = `${y}-${m}-${d}`
               setFecha(iso)
+              console.log('RecordatorioForm: fecha seleccionada ->', { iso, selectedLocal: selected, tzOffsetMin: selected.getTimezoneOffset() })
             }
           }}
         />
@@ -128,6 +158,7 @@ export default function RecordatorioForm({ onSaved }: Props) {
               const hh = String(selected.getHours()).padStart(2, '0')
               const mm = String(selected.getMinutes()).padStart(2, '0')
               setHora(`${hh}:${mm}`)
+              console.log('RecordatorioForm: hora seleccionada ->', { hh, mm, hora: `${hh}:${mm}` })
             }
           }}
         />

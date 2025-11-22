@@ -1,14 +1,19 @@
-import React, { useMemo, useState } from "react"
+import React, { useMemo, useState, useEffect } from "react"
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   Pressable,
+  Alert,
   type StyleProp,
   type ViewStyle,
 } from "react-native"
 import { isOverdue, getDaysUntil } from "../utils/dateHelpers"
+import { Switch, ActivityIndicator } from 'react-native'
+import useNotifee, { supportsTrigger } from '../hooks/useNotifee'
+import { updateRecordatorio } from '../../lib/api/recordatorios'
+import RecordatorioEditor from './RecordatorioEditor'
 
 export type RecordatorioItem = {
   id_recordatorio: number
@@ -82,13 +87,50 @@ export default function RecordatoriosList({
   onItemPress,
 }: RecordatoriosListProps) {
   const [filter, setFilter] = useState<FilterKey>(initialFilter)
+  const [schedulingMap, setSchedulingMap] = useState<Record<number, boolean>>({})
+  const [notificationIdMap, setNotificationIdMap] = useState<Record<number, string | null>>({})
+  const [loadingMap, setLoadingMap] = useState<Record<number, boolean>>({})
+  const [selected, setSelected] = useState<RecordatorioItem | null>(null)
+  const [editorVisible, setEditorVisible] = useState(false)
+  const [schedulingSupported, setSchedulingSupported] = useState<boolean | null>(null)
+  const nf = useNotifee()
+  const [localItems, setLocalItems] = useState<RecordatorioItem[]>(items)
+
+  // keep a local copy of items so UI can refresh immediately after edits
+  useEffect(() => setLocalItems(items), [items])
+
+  useEffect(() => {
+    // initialize scheduling map from localItems' notification_id
+    const map: Record<number, boolean> = {}
+    const nmap: Record<number, string | null> = {}
+    localItems.forEach((it) => {
+      const nid = (it as any).notification_id ?? null
+      map[it.id_recordatorio] = Boolean(nid)
+      nmap[it.id_recordatorio] = nid
+    })
+    setSchedulingMap(map)
+    setNotificationIdMap(nmap)
+  }, [localItems])
+
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const ok = await supportsTrigger()
+        if (mounted) setSchedulingSupported(ok)
+      } catch (e) {
+        if (mounted) setSchedulingSupported(false)
+      }
+    })()
+    return () => { mounted = false }
+  }, [])
 
   const filtered = useMemo(() => {
-    if (!items || items.length === 0) return []
+    if (!localItems || localItems.length === 0) return []
 
     const today = new Date()
 
-    return items.filter((it) => {
+    return localItems.filter((it) => {
       const datetime = `${it.fecha_aviso}T${it.hora}`
       const overdue = isOverdue(datetime)
       const pagoEstado = it.pago?.estado ?? ""
@@ -99,10 +141,17 @@ export default function RecordatoriosList({
       if (filter === "Pagado") return pagoEstado === "Pagado"
       return true
     })
-  }, [items, filter])
+  }, [localItems, filter])
 
   return (
     <View style={[styles.container, style]}>
+      {schedulingSupported === false ? (
+        <View style={{ backgroundColor: '#FFF4E5', padding: 10, borderRadius: 8, marginBottom: 12 }}>
+          <Text style={{ color: '#92400E' }}>
+            La programación de recordatorios está limitada en este entorno (no hay soporte de triggers). Algunas funciones pueden no estar disponibles.
+          </Text>
+        </View>
+      ) : null}
       {showFilters && (
         <View style={styles.filterRow}>
           {FILTERS.map((f) => (
@@ -123,18 +172,82 @@ export default function RecordatoriosList({
             const days = getDaysUntil(datetime)
             const status = it.pago?.estado === "Pagado" ? "Pagado" : overdue ? "Vencido" : days === 0 ? "Hoy" : "Próximo"
 
+            const scheduled = schedulingMap[it.id_recordatorio] ?? false
+
             return (
-              <Pressable key={it.id_recordatorio} onPress={() => onItemPress?.(it)} style={styles.card}>
+              <Pressable key={it.id_recordatorio} onPress={() => { setSelected(it); setEditorVisible(true); onItemPress?.(it) }} style={styles.card}>
                 <View style={styles.cardHeader}>
                   <View style={[styles.statusDot, status === "Vencido" ? styles.dotRed : status === "Pagado" ? styles.dotGreen : styles.dotYellow]} />
                   <Text style={styles.statusLabel}>{status}</Text>
                   <Text style={styles.timeText}>{formatTime(it.hora)}</Text>
+                  <View style={{ marginLeft: 12 }}>
+                    {loadingMap[it.id_recordatorio] ? (
+                      <ActivityIndicator size="small" />
+                      ) : (
+                      <Switch
+                        value={scheduled}
+                          onValueChange={async (value) => {
+                          // toggle schedule
+                          
+                          setLoadingMap((m) => ({ ...m, [it.id_recordatorio]: true }))
+                          try {
+                            if (value) {
+                              // schedule notification
+                              const currentNotifId = notificationIdMap[it.id_recordatorio] ?? (it as any).notification_id
+                              const date = new Date(`${it.fecha_aviso}T${it.hora}`)
+                              const notifId = await nf.scheduleTrigger({
+                                title: it.pago?.titulo ?? it.mensaje ?? 'Recordatorio',
+                                body: it.mensaje ?? undefined,
+                                date,
+                                smallIcon: 'ic_launcher',
+                              })
+                              // persist to DB
+                              await updateRecordatorio(it.id_recordatorio, { notification_id: notifId })
+                              // update local maps so cancel uses the known id
+                              setSchedulingMap((m) => ({ ...m, [it.id_recordatorio]: true }))
+                              setNotificationIdMap((m) => ({ ...m, [it.id_recordatorio]: String(notifId) }))
+                              // update localItems so UI reloads immediately
+                              setLocalItems((prev) => prev.map((p) => p.id_recordatorio === it.id_recordatorio ? { ...p, notification_id: notifId } : p))
+                            } else {
+                              // cancel: obtain notification id from item
+                              // prefer the in-memory map (reflects latest scheduled id)
+                              const notifId = notificationIdMap[it.id_recordatorio] ?? (it as any).notification_id
+                              if (notifId) {
+                                await nf.cancelNotification(String(notifId))
+                                await updateRecordatorio(it.id_recordatorio, { notification_id: null })
+                                // clear local map
+                                setNotificationIdMap((m) => ({ ...m, [it.id_recordatorio]: null }))
+                                // update localItems so UI reloads immediately
+                                setLocalItems((prev) => prev.map((p) => p.id_recordatorio === it.id_recordatorio ? { ...p, notification_id: null } : p))
+                              }
+                              setSchedulingMap((m) => ({ ...m, [it.id_recordatorio]: false }))
+                            }
+                          } catch (err: any) {
+                            console.error('Error scheduling/canceling notification', err)
+                            // Special handling when Android exact-alarm permission is required
+                            if (err && (err.code === 'ALARM_PERMISSION_REQUIRED' || String(err.message).includes('ALARM_PERMISSION_REQUIRED'))) {
+                              Alert.alert(
+                                'Permiso requerido',
+                                'Android requiere el permiso de "alarma exacta" para programar recordatorios en segundo plano. ¿Quieres abrir la configuración de permisos para habilitarlo?',
+                                [
+                                  { text: 'Cancelar', style: 'cancel' },
+                                  { text: 'Abrir ajustes', onPress: async () => { try { await nf.openAlarmPermissionSettings() } catch (e) { console.warn(e) } } },
+                                ]
+                              )
+                            }
+                          } finally {
+                            setLoadingMap((m) => ({ ...m, [it.id_recordatorio]: false }))
+                          }
+                        }}
+                      />
+                    )}
+                  </View>
                 </View>
 
                 <Text style={styles.title}>{it.pago?.titulo ?? it.mensaje ?? "Recordatorio"}</Text>
                 {it.mensaje ? <Text style={styles.message}>{it.mensaje}</Text> : null}
 
-                <View style={styles.row}> 
+                <View style={styles.row}>
                   <Text style={styles.dateLabel}>{status === "Pagado" ? `Pagado el ${formatDateLabel(it.fecha_aviso, it.hora)}` : `Vence el ${formatDateLabel(it.fecha_aviso, it.hora)}`}</Text>
                   {it.pago?.monto ? <Text style={styles.amount}>${Number(it.pago.monto).toLocaleString('es-CL')}</Text> : null}
                 </View>
@@ -143,6 +256,23 @@ export default function RecordatoriosList({
           })
         )}
       </ScrollView>
+      <RecordatorioEditor
+        visible={editorVisible}
+        recordatorio={selected}
+        onClose={() => { setEditorVisible(false); setSelected(null) }}
+        onUpdated={(updated) => {
+          // optimistic local update: update maps
+          setNotificationIdMap((m) => ({ ...m, [updated.id_recordatorio]: (updated as any).notification_id ?? null }))
+          setSchedulingMap((m) => ({ ...m, [updated.id_recordatorio]: Boolean((updated as any).notification_id) }))
+          setLocalItems((prev) => prev.map((p) => p.id_recordatorio === updated.id_recordatorio ? (updated as any) : p))
+        }}
+        onDeleted={(id) => {
+          // remove local maps
+          setNotificationIdMap((m) => { const copy = { ...m }; delete copy[id]; return copy })
+          setSchedulingMap((m) => { const copy = { ...m }; delete copy[id]; return copy })
+          setLocalItems((prev) => prev.filter((p) => p.id_recordatorio !== id))
+        }}
+      />
     </View>
   )
 }
