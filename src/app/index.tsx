@@ -1,5 +1,5 @@
 // src/app/index.tsx
-import { ScrollView, View } from "react-native"
+import { Pressable, ScrollView, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 import AppPreview from "@/components/home/AppPreview"
