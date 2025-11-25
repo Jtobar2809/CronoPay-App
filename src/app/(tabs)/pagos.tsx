@@ -4,11 +4,13 @@ import {
   RefreshControl,
   Text,
   View,
+  StyleSheet,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 import { useAuth } from "../../../providers/AuthProvider"
 import { usePagos } from "../../hooks/usePagos"
+import { AddPaymentModal } from "../../components/AddPaymentModal"
 
 function PagoCard({
   monto,
@@ -25,18 +27,18 @@ function PagoCard({
   const statusColor = estado === "Pagado" ? "#1B3D48" : "#B08A00"
 
   return (
-    <View className="mb-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-      <Text className="text-lg font-semibold text-primary-800">
+    <View style={cardStyles.container}>
+      <Text style={cardStyles.amount}>
         ${parseFloat(monto).toFixed(2)}
       </Text>
-      <Text className="mt-1 text-sm text-neutral-700">
+      <Text style={cardStyles.category}>
         {categoria ?? "Sin categoría"}
       </Text>
-      <View className="mt-3 flex-row items-center justify-between">
-        <Text className="text-xs font-medium text-neutral-600">
+      <View style={cardStyles.footer}>
+        <Text style={cardStyles.date}>
           Vence: {formattedDate}
         </Text>
-        <Text style={{ color: statusColor }} className="text-xs font-semibold">
+        <Text style={[cardStyles.status, { color: statusColor }]}>
           {estado ?? "Pendiente"}
         </Text>
       </View>
@@ -50,23 +52,23 @@ export default function PagosScreen() {
   const { data, isLoading, error, refetch } = usePagos(userId)
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-50">
-      <View className="flex-1 px-6 py-6">
-        <Text className="text-2xl font-bold text-primary-900">Pagos</Text>
-        <Text className="mt-1 text-sm text-neutral-600">
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Pagos</Text>
+        <Text style={styles.subtitle}>
           Revisa tus obligaciones próximas y mantente al día.
         </Text>
 
         {error ? (
-          <View className="mt-10 items-center">
-            <Text className="text-center text-sm text-red-600">
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>
               {error.message}
             </Text>
           </View>
         ) : null}
 
         {isLoading && data.length === 0 ? (
-          <View className="flex-1 items-center justify-center">
+          <View style={styles.loadingContainer}>
             <ActivityIndicator color="#1B3D48" />
           </View>
         ) : (
@@ -81,16 +83,16 @@ export default function PagosScreen() {
                 estado={item.estado}
               />
             )}
-            style={{ marginTop: 20 }}
+            style={styles.list}
             showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
             ListEmptyComponent={() => (
-              <View className="mt-16 items-center">
-                <Text className="text-base font-medium text-neutral-700">
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>
                   No hay pagos registrados aún.
                 </Text>
-                <Text className="mt-2 text-center text-sm text-neutral-500">
-                  Puedes comenzar añadiendo uno desde la versión web o
-                  implementando el flujo de creación en esta pantalla.
+                <Text style={styles.emptySubtext}>
+                  Usa el botón de abajo para agregar tu primer pago.
                 </Text>
               </View>
             )}
@@ -100,6 +102,114 @@ export default function PagosScreen() {
           />
         )}
       </View>
+
+      <View style={styles.buttonContainer}>
+        <AddPaymentModal onPaymentAdded={refetch} />
+      </View>
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fafaf9',
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingVertical: 24,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1B3D48',
+  },
+  subtitle: {
+    marginTop: 4,
+    fontSize: 14,
+    color: '#737373',
+  },
+  errorContainer: {
+    marginTop: 40,
+    alignItems: 'center',
+  },
+  errorText: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#ef4444',
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  list: {
+    marginTop: 20,
+  },
+  listContent: {
+    paddingBottom: 100,
+  },
+  emptyContainer: {
+    marginTop: 64,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#404040',
+  },
+  emptySubtext: {
+    marginTop: 8,
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#737373',
+  },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 24,
+    right: 24,
+  },
+})
+
+const cardStyles = StyleSheet.create({
+  container: {
+    marginBottom: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    backgroundColor: '#ffffff',
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  amount: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1B3D48',
+  },
+  category: {
+    marginTop: 4,
+    fontSize: 14,
+    color: '#404040',
+  },
+  footer: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  date: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#737373',
+  },
+  status: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+})
