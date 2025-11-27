@@ -9,6 +9,7 @@ import {
   type ViewStyle,
 } from "react-native"
 import { useTema } from "@/hooks/useTema"
+import { withDecay } from "react-native-reanimated"
 
 type ButtonProps = {
   label: string
@@ -22,7 +23,7 @@ type ButtonProps = {
   darkBackgroundColor?: string
   darkTextColor?: string
   darkIconColor?: string
-  size?: "small" | "medium" | "large"
+  size?: "small" | "medium" | "large" | "adjust"
   disabled?: boolean
   style?: StyleProp<ViewStyle>
   safeArea?: boolean // añade marginBottom igual al inset inferior
@@ -37,18 +38,28 @@ const SIZE_STYLES = {
     paddingHorizontal: 16,
     fontSize: 14,
     iconSize: 18,
+    width: 200,
   },
   medium: {
     height: 52,
     paddingHorizontal: 20,
     fontSize: 15,
     iconSize: 20,
+    width: 250,
   },
   large: {
     height: 60,
     paddingHorizontal: 24,
     fontSize: 16,
     iconSize: 22,
+    width: 300,
+  },
+  adjust: {
+    height: 50,
+    fontSize: 16,
+    iconSize: 22,
+    paddingHorizontal: 0,
+    width: 180,
   },
 }
 
@@ -90,6 +101,7 @@ export default function Button({
       backgroundColor: effectiveBackgroundColor,
       height: sizeConfig.height,
       paddingHorizontal: sizeConfig.paddingHorizontal,
+      width: sizeConfig.width,
     },
     style,
     safeArea ? { marginBottom: insets.bottom ?? 0 } : undefined,
@@ -132,6 +144,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    margin: "auto",
     borderRadius: 16,
     shadowColor: "#000",
     shadowOpacity: 0.08,
