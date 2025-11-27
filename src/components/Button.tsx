@@ -8,6 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native"
+import { useTema } from "@/hooks/useTema"
 
 type ButtonProps = {
   label: string
@@ -16,6 +17,11 @@ type ButtonProps = {
   iconColor?: string
   backgroundColor?: string
   textColor?: string
+  // Dark theme overrides: if provided and the app is in dark theme, these values
+  // will be used instead of `backgroundColor`, `textColor` and `iconColor`.
+  darkBackgroundColor?: string
+  darkTextColor?: string
+  darkIconColor?: string
   size?: "small" | "medium" | "large"
   disabled?: boolean
   style?: StyleProp<ViewStyle>
@@ -53,6 +59,9 @@ export default function Button({
   iconColor,
   backgroundColor = DEFAULT_BG_COLOR,
   textColor = DEFAULT_TEXT_COLOR,
+  darkBackgroundColor,
+  darkTextColor,
+  darkIconColor,
   size = "medium",
   disabled = false,
   style,
@@ -60,11 +69,25 @@ export default function Button({
 }: ButtonProps) {
   const insets = useSafeAreaInsets()
   const sizeConfig = SIZE_STYLES[size]
+  const { tema } = useTema()
+  const isDark = tema === "dark"
   
+  const effectiveBackgroundColor = disabled
+    ? "#D1D5DB"
+    : (isDark ? (darkBackgroundColor ?? backgroundColor) : (backgroundColor))
+
+  const effectiveTextColor = disabled
+    ? "#9CA3AF"
+    : (isDark ? (darkTextColor ?? textColor) : textColor)
+
+  const effectiveIconColor = disabled
+    ? "#9CA3AF"
+    : (isDark ? (darkIconColor ?? (iconColor ?? textColor)) : (iconColor ?? textColor))
+
   const containerStyles = [
     styles.container,
     {
-      backgroundColor: disabled ? "#D1D5DB" : backgroundColor,
+      backgroundColor: effectiveBackgroundColor,
       height: sizeConfig.height,
       paddingHorizontal: sizeConfig.paddingHorizontal,
     },
@@ -75,12 +98,12 @@ export default function Button({
   const textStyles = [
     styles.text,
     {
-      color: disabled ? "#9CA3AF" : textColor,
+      color: effectiveTextColor,
       fontSize: sizeConfig.fontSize,
     },
   ]
 
-  const resolvedIconColor = disabled ? "#9CA3AF" : (iconColor ?? textColor)
+  const resolvedIconColor = effectiveIconColor
 
   return (
     <Pressable
