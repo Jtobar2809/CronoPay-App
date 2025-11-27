@@ -1,9 +1,10 @@
-// hooks/usePagoActions.ts
 import { useState } from 'react';
 import { Alert } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { PagoWithRelations, setPagoEstado, deletePago } from 'lib/api/pagos';
 
 export const usePagoActions = (onActionSuccess?: () => void) => {
+  const { t } = useTranslation();
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
 
   const handleMarkAsPaid = async (pago: PagoWithRelations) => {
@@ -15,7 +16,10 @@ export const usePagoActions = (onActionSuccess?: () => void) => {
       // Llamada real a Supabase
       await setPagoEstado(pago.id_pago, 'Pagado');
       
-      Alert.alert('Éxito', `Pago "${pago.titulo}" marcado como pagado`);
+      Alert.alert(
+        t('Success'), 
+        `${t('PaymentColon')} "${pago.titulo}" ${t('MarkedAsPaid')}`
+      );
       
       // Refrescar los datos
       if (onActionSuccess) {
@@ -25,7 +29,10 @@ export const usePagoActions = (onActionSuccess?: () => void) => {
       return true;
     } catch (error: any) {
       console.error('Error marcando como pagado:', error);
-      Alert.alert('Error', error.message || 'No se pudo marcar el pago como pagado');
+      Alert.alert(
+        t('Error'), 
+        error.message || t('CouldNotMarkAsPaid')
+      );
       return false;
     } finally {
       setLoadingAction(null);
@@ -39,11 +46,11 @@ export const usePagoActions = (onActionSuccess?: () => void) => {
       // Mostrar confirmación antes de eliminar
       return new Promise<boolean>((resolve) => {
         Alert.alert(
-          'Eliminar Pago',
-          `¿Estás seguro de que quieres eliminar el pago "${pago.titulo}"?`,
+          t('DeletePayment'),
+          `${t('SureToDeletePayment')} "${pago.titulo}"?`,
           [
             { 
-              text: 'Cancelar', 
+              text: t('Cancel'), 
               style: 'cancel',
               onPress: () => {
                 setLoadingAction(null);
@@ -51,7 +58,7 @@ export const usePagoActions = (onActionSuccess?: () => void) => {
               }
             },
             { 
-              text: 'Eliminar', 
+              text: t('DeletePayment'), 
               style: 'destructive',
               onPress: async () => {
                 try {
@@ -60,7 +67,10 @@ export const usePagoActions = (onActionSuccess?: () => void) => {
                   // Llamada real a Supabase
                   await deletePago(pago.id_pago);
                   
-                  Alert.alert('Éxito', `Pago "${pago.titulo}" eliminado`);
+                  Alert.alert(
+                    t('Success'), 
+                    `${t('PaymentColon')} "${pago.titulo}" ${t('Deleted')}`
+                  );
                   
                   // Refrescar los datos
                   if (onActionSuccess) {
@@ -70,7 +80,10 @@ export const usePagoActions = (onActionSuccess?: () => void) => {
                   resolve(true);
                 } catch (error: any) {
                   console.error('Error eliminando pago:', error);
-                  Alert.alert('Error', error.message || 'No se pudo eliminar el pago');
+                  Alert.alert(
+                    t('Error'), 
+                    error.message || t('CouldNotDeletePayment')
+                  );
                   resolve(false);
                 } finally {
                   setLoadingAction(null);

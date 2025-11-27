@@ -1,6 +1,7 @@
 import { PagoWithRelations } from "lib/api/pagos"
 import { useAuth } from "providers/AuthProvider"
 import React, { useMemo, useState } from "react"
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -25,6 +26,7 @@ import {
 } from "../utils/dateHelpers"
 
 export function PaymentCalendar() {
+  const { t } = useTranslation();
   const { tema } = useTema()
   const isDark = tema === "dark"
   const [selectedDay, setSelectedDay] = useState<number | null>(null)
@@ -77,80 +79,80 @@ export function PaymentCalendar() {
   }, [currentYear, currentMonth])
 
   // Nombres de los días
-  const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"]
+  const dayNames = t('DayNames', { returnObjects: true }) as string[]
 
-// Procesar pagos del mes actual - VERSIÓN MANUAL COMPLETA
-const paymentsThisMonth = useMemo(() => {
-  if (!pagos || isLoading) return []
-  
-  const filtered = pagos.filter((pago) => {
-    try {
-      // Parsear manualmente la fecha YYYY-MM-DD
-      const [yearStr, monthStr, dayStr] = pago.fecha_vencimiento.split('-')
-      const pagoYear = parseInt(yearStr)
-      const pagoMonth = parseInt(monthStr) - 1 // Restar 1 porque los meses en JS son 0-based
-      
-      console.log(`DEBUG: ${pago.titulo} - Fecha: ${pago.fecha_vencimiento} -> Mes: ${pagoMonth}, Año: ${pagoYear}`)
-      console.log(`DEBUG: Comparando con -> Mes actual: ${currentMonth}, Año actual: ${currentYear}`)
-      console.log(`DEBUG: Coincide: ${pagoMonth === currentMonth && pagoYear === currentYear}`)
-      
-      return pagoMonth === currentMonth && pagoYear === currentYear
-    } catch (error) {
-      console.error('Error procesando fecha:', pago.fecha_vencimiento, error)
-      return false
-    }
-  })
-  
-  console.log('=== DEBUG MANUAL FILTER ===')
-  console.log('Buscando mes:', currentMonth, '(0-based), año:', currentYear)
-  console.log('Total pagos disponibles:', pagos.length)
-  console.log('Pagos encontrados para este mes:', filtered.length)
-  
-  if (filtered.length === 0) {
-    console.log('NO se encontraron pagos para este mes')
-    // Mostrar todos los pagos disponibles para debug
-    pagos.forEach(p => {
-      const [y, m, d] = p.fecha_vencimiento.split('-')
-      console.log(`Pago disponible: ${p.titulo} - ${p.fecha_vencimiento} -> Mes: ${parseInt(m)-1}, Año: ${y}`)
-    })
-  } else {
-    filtered.forEach(p => {
-      console.log(`- ${p.titulo}: ${p.fecha_vencimiento}`)
-    })
-  }
-  console.log('=== FIN DEBUG ===')
-  
-  return filtered
-}, [pagos, isLoading, currentMonth, currentYear])
+  // Procesar pagos del mes actual - VERSIÓN MANUAL COMPLETA
+  const paymentsThisMonth = useMemo(() => {
+    if (!pagos || isLoading) return []
 
-// Obtener días con pagos - VERSIÓN ROBUSTA (ESTA ES LA QUE FALTABA)
-const paymentDaysByDate = useMemo(() => {
-  const result: Record<number, PagoWithRelations[]> = {}
+    const filtered = pagos.filter((pago) => {
+      try {
+        // Parsear manualmente la fecha YYYY-MM-DD
+        const [yearStr, monthStr, dayStr] = pago.fecha_vencimiento.split('-')
+        const pagoYear = parseInt(yearStr)
+        const pagoMonth = parseInt(monthStr) - 1 // Restar 1 porque los meses en JS son 0-based
 
-  paymentsThisMonth.forEach((pago) => {
-    // Parsear la fecha manualmente del formato YYYY-MM-DD
-    const dateParts = pago.fecha_vencimiento.split('-')
-    if (dateParts.length === 3) {
-      const day = parseInt(dateParts[2])
+        console.log(`DEBUG: ${pago.titulo} - Fecha: ${pago.fecha_vencimiento} -> Mes: ${pagoMonth}, Año: ${pagoYear}`)
+        console.log(`DEBUG: Comparando con -> Mes actual: ${currentMonth}, Año actual: ${currentYear}`)
+        console.log(`DEBUG: Coincide: ${pagoMonth === currentMonth && pagoYear === currentYear}`)
 
-      if (!result[day]) {
-        result[day] = []
+        return pagoMonth === currentMonth && pagoYear === currentYear
+      } catch (error) {
+        console.error('Error procesando fecha:', pago.fecha_vencimiento, error)
+        return false
       }
-      result[day].push(pago)
-    }
-  })
-
-  console.log('Calendario - Días con pagos:', Object.keys(result).length)
-  Object.entries(result).forEach(([day, pagos]) => {
-    console.log(`Calendario - Día ${day}: ${pagos.length} pagos`)
-    pagos.forEach(pago => {
-      const dayFromString = parseInt(pago.fecha_vencimiento.split('-')[2])
-      console.log(`  - ${pago.titulo}: ${pago.fecha_vencimiento} -> Día del string: ${dayFromString}`)
     })
-  })
 
-  return result
-}, [paymentsThisMonth])
+    console.log('=== DEBUG MANUAL FILTER ===')
+    console.log('Buscando mes:', currentMonth, '(0-based), año:', currentYear)
+    console.log('Total pagos disponibles:', pagos.length)
+    console.log('Pagos encontrados para este mes:', filtered.length)
+
+    if (filtered.length === 0) {
+      console.log('NO se encontraron pagos para este mes')
+      // Mostrar todos los pagos disponibles para debug
+      pagos.forEach(p => {
+        const [y, m, d] = p.fecha_vencimiento.split('-')
+        console.log(`Pago disponible: ${p.titulo} - ${p.fecha_vencimiento} -> Mes: ${parseInt(m) - 1}, Año: ${y}`)
+      })
+    } else {
+      filtered.forEach(p => {
+        console.log(`- ${p.titulo}: ${p.fecha_vencimiento}`)
+      })
+    }
+    console.log('=== FIN DEBUG ===')
+
+    return filtered
+  }, [pagos, isLoading, currentMonth, currentYear])
+
+  // Obtener días con pagos - VERSIÓN ROBUSTA (ESTA ES LA QUE FALTABA)
+  const paymentDaysByDate = useMemo(() => {
+    const result: Record<number, PagoWithRelations[]> = {}
+
+    paymentsThisMonth.forEach((pago) => {
+      // Parsear la fecha manualmente del formato YYYY-MM-DD
+      const dateParts = pago.fecha_vencimiento.split('-')
+      if (dateParts.length === 3) {
+        const day = parseInt(dateParts[2])
+
+        if (!result[day]) {
+          result[day] = []
+        }
+        result[day].push(pago)
+      }
+    })
+
+    console.log('Calendario - Días con pagos:', Object.keys(result).length)
+    Object.entries(result).forEach(([day, pagos]) => {
+      console.log(`Calendario - Día ${day}: ${pagos.length} pagos`)
+      pagos.forEach(pago => {
+        const dayFromString = parseInt(pago.fecha_vencimiento.split('-')[2])
+        console.log(`  - ${pago.titulo}: ${pago.fecha_vencimiento} -> Día del string: ${dayFromString}`)
+      })
+    })
+
+    return result
+  }, [paymentsThisMonth])
 
   // Obtener pagos del día seleccionado
   const selectedDayPayments = useMemo(() => {
@@ -213,9 +215,9 @@ const paymentDaysByDate = useMemo(() => {
         <View style={dynamicStyles.card}>
           <View style={styles.errorContainer}>
             <Text style={styles.errorIcon}>🔒</Text>
-            <Text style={styles.errorText}>No autenticado</Text>
+            <Text style={styles.errorText}>{t('NotAuthenticated')}</Text>
             <Text style={styles.errorSubtext}>
-              Debes iniciar sesión para ver tus pagos
+              {t('MustLoginToSeePayments')}
             </Text>
           </View>
         </View>
@@ -230,7 +232,7 @@ const paymentDaysByDate = useMemo(() => {
         <View style={dynamicStyles.card}>
           <View style={styles.errorContainer}>
             <Text style={styles.errorIcon}>⚠️</Text>
-            <Text style={styles.errorText}>Error al cargar los pagos</Text>
+            <Text style={styles.errorText}>{t('ErrorLoadingPayments')}</Text>
             <Text style={styles.errorSubtext}>{error.message}</Text>
           </View>
         </View>
@@ -330,7 +332,7 @@ const paymentDaysByDate = useMemo(() => {
     return (
       <View style={[styles.paymentDetails, isDark && styles.paymentDetailsDark]}>
         <Text style={dynamicStyles.paymentTitle}>
-          Pagos del {selectedDay} de {getMonthName(currentMonth)}
+          {t('PaymentsOf')} {selectedDay} {t('Of')} {getMonthName(currentMonth)}
         </Text>
 
         <View style={styles.paymentsList}>
@@ -344,9 +346,9 @@ const paymentDaysByDate = useMemo(() => {
                   {pago.titulo}
                 </Text>
                 <Text style={styles.paymentCategory}>
-                  {pago.categoria?.nombre || "Sin categoría"} •
+                  {pago.categoria?.nombre || t('Uncategoryed')}
                   <Text style={pago.estado === "Pagado" ? styles.statusPaid : styles.statusPending}>
-                    {pago.estado === "Pagado" ? " Pagado" : " Pendiente"}
+                    {pago.estado === "Pagado" ? ` ${t('Paid')}` : ` ${t('Pending')}`}
                   </Text>
                 </Text>
               </View>
@@ -358,7 +360,7 @@ const paymentDaysByDate = useMemo(() => {
         </View>
 
         <View style={styles.paymentTotal}>
-          <Text style={dynamicStyles.paymentDetailText}>Total del día:</Text>
+          <Text style={dynamicStyles.paymentDetailText}>{t('TotalOfDay')}</Text>
           <Text style={dynamicStyles.paymentAmount}>
             {formatCurrency(totalDia)}
           </Text>
@@ -372,22 +374,22 @@ const paymentDaysByDate = useMemo(() => {
       <View style={dynamicStyles.card}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={dynamicStyles.title}>Calendario de Pagos</Text>
+          <Text style={dynamicStyles.title}>{t('PaymentCalendar')}</Text>
           {paymentsThisMonth.length > 0 && (
             <Text style={dynamicStyles.subtitle}>
-              {paymentsThisMonth.length} pago(s) en {getMonthName(currentMonth)}
+              {paymentsThisMonth.length} {t('PaymentsInMonth')} {getMonthName(currentMonth)}
             </Text>
           )}
         </View>
 
         {/* Navegación entre meses */}
         <View style={styles.navigation}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={dynamicStyles.navButton}
             onPress={goToPreviousMonth}
           >
             <Ionicons name="chevron-back" size={20} color={isDark ? "#fafafa" : "#0a0a0a"} />
-            <Text style={dynamicStyles.navButtonText}>Anterior</Text>
+            <Text style={dynamicStyles.navButtonText}>{t('Previous')}</Text>
           </TouchableOpacity>
 
           <View style={styles.monthHeader}>
@@ -395,20 +397,20 @@ const paymentDaysByDate = useMemo(() => {
               {getMonthName(currentMonth)} {currentYear}
             </Text>
             {!isCurrentMonth && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.currentMonthButton}
                 onPress={goToCurrentMonth}
               >
-                <Text style={styles.currentMonthButtonText}>Hoy</Text>
+                <Text style={styles.currentMonthButtonText}>{t('Today')}</Text>
               </TouchableOpacity>
             )}
           </View>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={dynamicStyles.navButton}
             onPress={goToNextMonth}
           >
-            <Text style={dynamicStyles.navButtonText}>Siguiente</Text>
+            <Text style={dynamicStyles.navButtonText}>{t('Next')}</Text>
             <Ionicons name="chevron-forward" size={20} color={isDark ? "#fafafa" : "#0a0a0a"} />
           </TouchableOpacity>
         </View>
@@ -434,11 +436,11 @@ const paymentDaysByDate = useMemo(() => {
         <View style={styles.legend}>
           <View style={styles.legendItem}>
             <View style={[styles.legendColor, styles.legendToday]} />
-            <Text style={dynamicStyles.legendText}>Hoy</Text>
+            <Text style={dynamicStyles.legendText}>{t('Today')}</Text>
           </View>
           <View style={styles.legendItem}>
             <View style={[styles.legendColor, styles.legendSelected]} />
-            <Text style={dynamicStyles.legendText}>Seleccionado</Text>
+            <Text style={dynamicStyles.legendText}>{t('Selected')}</Text>
           </View>
           <View style={styles.legendItem}>
             <View
@@ -448,11 +450,11 @@ const paymentDaysByDate = useMemo(() => {
                 isDark && styles.legendPendingDark,
               ]}
             />
-            <Text style={dynamicStyles.legendText}>Pendientes</Text>
+            <Text style={dynamicStyles.legendText}>{t('Pendings')}</Text>
           </View>
           <View style={styles.legendItem}>
             <View style={[styles.legendColor, styles.legendOverdue]} />
-            <Text style={dynamicStyles.legendText}>Vencidos</Text>
+            <Text style={dynamicStyles.legendText}>{t('Overdue_plural')}</Text>
           </View>
           <View style={styles.legendItem}>
             <View
@@ -462,14 +464,14 @@ const paymentDaysByDate = useMemo(() => {
                 isDark && styles.legendPaidDark,
               ]}
             />
-            <Text style={dynamicStyles.legendText}>Completados</Text>
+            <Text style={dynamicStyles.legendText}>{t('Completed_plural')}</Text>
           </View>
         </View>
 
         {/* Resumen del mes */}
         {paymentsThisMonth.length > 0 && (
           <View style={[styles.summary, isDark && styles.summaryDark]}>
-            <Text style={dynamicStyles.summaryTitle}>Resumen de {getMonthName(currentMonth)}:</Text>
+            <Text style={dynamicStyles.summaryTitle}>{t('SummaryOf')} {getMonthName(currentMonth)}:</Text>
             <View style={styles.summaryGrid}>
               <View style={styles.summaryItem}>
                 <Text
@@ -483,7 +485,7 @@ const paymentDaysByDate = useMemo(() => {
                       .length
                   }
                 </Text>
-                <Text style={dynamicStyles.summaryLabel}>Pendientes</Text>
+                <Text style={dynamicStyles.summaryLabel}>{t('Pendings')}</Text>
               </View>
               <View style={styles.summaryItem}>
                 <Text
@@ -497,7 +499,7 @@ const paymentDaysByDate = useMemo(() => {
                       .length
                   }
                 </Text>
-                <Text style={dynamicStyles.summaryLabel}>Pagados</Text>
+                <Text style={dynamicStyles.summaryLabel}>{t('Paid')}</Text>
               </View>
               <View style={styles.summaryItem}>
                 <Text style={dynamicStyles.summaryValue}>
@@ -505,7 +507,7 @@ const paymentDaysByDate = useMemo(() => {
                     paymentsThisMonth.reduce((sum, p) => sum + Number(p.monto ?? 0), 0)
                   )}
                 </Text>
-                <Text style={dynamicStyles.summaryLabel}>Total</Text>
+                <Text style={dynamicStyles.summaryLabel}>{t('Total')}</Text>
               </View>
             </View>
           </View>
@@ -515,7 +517,7 @@ const paymentDaysByDate = useMemo(() => {
         {isLoading && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color="#3b82f6" />
-            <Text style={dynamicStyles.loadingText}>Cargando pagos...</Text>
+            <Text style={dynamicStyles.loadingText}>{t('LoadingPayments')}</Text>
           </View>
         )}
 
@@ -523,7 +525,7 @@ const paymentDaysByDate = useMemo(() => {
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyIcon}>📅</Text>
             <Text style={[styles.emptyText, isDark && styles.emptyTextDark]}>
-              No hay pagos en {getMonthName(currentMonth)}
+              {t('NoPaymentsInMonth')} {getMonthName(currentMonth)}
             </Text>
           </View>
         )}

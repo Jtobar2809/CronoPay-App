@@ -5,8 +5,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
-  useColorScheme,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useTema } from '@/hooks/useTema';
 import { AddPaymentForm } from './AddPaymentForm';
 
 interface AddPaymentModalProps {
@@ -14,9 +15,9 @@ interface AddPaymentModalProps {
 }
 
 export function AddPaymentModal({ onPaymentAdded }: AddPaymentModalProps) {
-  // TEMA: Usar useColorScheme, actualizar con ThemeProvider cuando esté listo
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { t } = useTranslation();
+  const { tema } = useTema();
+  const isDark = tema === 'dark';
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -36,7 +37,7 @@ export function AddPaymentModal({ onPaymentAdded }: AddPaymentModalProps) {
         onPress={() => setIsVisible(true)}
         activeOpacity={0.8}
       >
-        <Text style={styles.openButtonText}>➕ Agregar Pago</Text>
+        <Text style={styles.openButtonText}>➕ {t('AddNewPayment')}</Text>
       </TouchableOpacity>
 
       <Modal
