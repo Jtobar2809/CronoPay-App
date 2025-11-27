@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -506,6 +507,7 @@ export default function PagosScreen() {
       </View>
     </SafeAreaView>
   );
+  );
 }
 
 const styles = StyleSheet.create({
@@ -584,7 +586,118 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     color: '#737373',
+    paddingVertical: 32,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 16,
+    opacity: 0.5,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#737373',
     textAlign: 'center',
+  },
+  emptyTextDark: {
+    color: '#a3a3a3',
+  },
+  emptySubtext: {
+    marginTop: 8,
+    fontSize: 12,
+  },
+  monthSection: {
+    marginBottom: 24,
+  },
+  monthTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0a0a0a',
+    marginBottom: 12,
+    textTransform: 'capitalize',
+  },
+  monthTitleDark: {
+    color: '#fafafa',
+  },
+  remindersScrollContainer: {
+    maxHeight: 450,
+  },
+  remindersContainer: {
+    gap: 0,
+  },
+  reminderCard: {
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    backgroundColor: '#f9fafb',
+    marginBottom: 12,
+  },
+  reminderCardDark: {
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    backgroundColor: '#262626',
+    borderColor: '#404040',
+    marginBottom: 12,
+  },
+  reminderCardOverdue: {
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ef4444',
+    backgroundColor: '#fee2e2',
+    marginBottom: 12,
+  },
+  reminderCardOverdueDark: {
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ef4444',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    marginBottom: 12,
+  },
+  reminderCardToday: {
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#3b82f6',
+    backgroundColor: '#eff6ff',
+    marginBottom: 12,
+  },
+  reminderCardTodayDark: {
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#3b82f6',
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    marginBottom: 12,
+  },
+  reminderCardWeek: {
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fb923c',
+    backgroundColor: '#fff7ed',
+    marginBottom: 12,
+  },
+  reminderCardWeekDark: {
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fb923c',
+    backgroundColor: 'rgba(251, 146, 60, 0.1)',
+    marginBottom: 12,
+  },
+  reminderHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  reminderHeaderLeft: {
+    flex: 1,
+  },
+  dateText: {
   },
   emptyTextDark: {
     color: '#a3a3a3',
