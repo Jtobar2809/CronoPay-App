@@ -72,6 +72,7 @@ const resources = {
         "Nov",
         "Dic",
       ],
+
       profilAndSettings: "Perfil y Configuración",
       editProfile: "Editar perfil",
       settings: "Configuraciones",
@@ -80,6 +81,7 @@ const resources = {
       language: "Idioma",
       chooseYourPreferredLanguage: "Elige tu idioma preferido",
       Spanish: "Español",
+      English: "Inglés",
       theme: "Tema",
       chooseYourFavoriteTheme: "Elige tu tema preferido",
       backup: "Copia de seguridad",
@@ -155,6 +157,68 @@ const resources = {
       Others: "Otros",
       NextDueDates: "Próximos Vencimientos",
       AddNewPayment: "Agregar Nuevo Pago",
+
+      // Calendario
+      PaymentCalendar: "Calendario de Pagos",
+      PaymentsInMonth: "pago(s) en",
+      Previous: "Anterior",
+      Next: "Siguiente",
+      Today: "Hoy",
+      DayNames: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+      Selected: "Seleccionado",
+      Overdue_plural: "Vencidos",
+      Completed_plural: "Completados",
+      SummaryOf: "Resumen de",
+      Total: "Total",
+      DaysWithPayments: "Días con pagos",
+      LoadingPayments: "Cargando pagos...",
+      NoPaymentsInMonth: "No hay pagos en",
+      PaymentsOf: "Pagos del",
+      Of: "de",
+      TotalOfDay: "Total del día:",
+
+      // Pantalla de Pagos
+      AllPayments: "📅 Todos los Pagos",
+      ReviewUpcomingObligations:
+        "Revisa tus obligaciones próximas y mantente al día.",
+      NotAuthenticated: "No autenticado",
+      MustLoginToSeePayments: "Debes iniciar sesión para ver tus pagos",
+      ErrorLoadingPayments: "Error al cargar pagos",
+      NoPaymentsRegisteredThisMonth: "No hay pagos registrados para este mes",
+      CanStartAddingOne:
+        "Puedes comenzar añadiendo uno desde el botón inferior.",
+      DaysAgo: "Vencido hace",
+      Day: "día",
+      Days: "días",
+      Tomorrow: "Mañana",
+      InDays: "En",
+      InDaysPlural: "días",
+      GeneralTotal: "Total General:",
+      PendingPayments: "Pendientes:",
+      PaidPayments: "Pagados:",
+
+      // Recordatorios de Pago
+      Reminders: "📅 Reminders",
+      NoPaymentReminders: "No hay recordatorios de pagos pendientes",
+      MustLoginToSeeReminders:
+        "Debes iniciar sesión para ver tus recordatorios",
+      ErrorLoadingReminders: "Error al cargar recordatorios",
+      LoadingReminders: "Cargando recordatorios...",
+      TotalPaymentsPending: "Total de pagos pendientes:",
+      TotalPaymentsColon: "Total Pagos:",
+
+      // Acciones de Pago
+      Success: "Éxito",
+      MarkedAsPaid: "marcado como pagado",
+      Error: "Error",
+      CouldNotMarkAsPaid: "No se pudo marcar el pago como pagado",
+      DeletePayment: "Eliminar Pago",
+      SureToDeletePayment: "¿Estás seguro de que quieres eliminar el pago",
+      Deleted: "eliminado",
+      CouldNotDeletePayment: "No se pudo eliminar el pago",
+
+      // Tarjeta de Pago
+      PaymentColon: "Pago:",
     },
   },
   en: {
@@ -223,6 +287,7 @@ const resources = {
         "Nov",
         "Dec",
       ],
+
       profilAndSettings: "Profile and Settings",
       editProfile: "Edit Profile",
       settings: "Settings",
@@ -231,6 +296,7 @@ const resources = {
       language: "Language",
       chooseYourPreferredLanguage: "Choose your preferred language",
       Spanish: "Spanish",
+      English: "English",
       theme: "Theme",
       chooseYourFavoriteTheme: "Choose your favorite theme",
       backup: "Backup",
@@ -303,6 +369,66 @@ const resources = {
       Others: "Others",
       NextDueDates: "Next Due Dates",
       AddNewPayment: "Add New Payment",
+
+      // Calendar
+      PaymentCalendar: "Payment Calendar",
+      PaymentsInMonth: "payment(s) in",
+      Previous: "Previous",
+      Next: "Next",
+      Today: "Today",
+      DayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+      Selected: "Selected",
+      Overdue_plural: "Overdue",
+      Completed_plural: "Completed",
+      SummaryOf: "Summary of",
+      Total: "Total",
+      DaysWithPayments: "Days with payments",
+      LoadingPayments: "Loading payments...",
+      NoPaymentsInMonth: "No payments in",
+      PaymentsOf: "Payments of",
+      Of: "of",
+      TotalOfDay: "Total of the day:",
+
+      // Payments Screen
+      AllPayments: "📅 All Payments",
+      ReviewUpcomingObligations:
+        "Review your upcoming obligations and stay on track.",
+      NotAuthenticated: "Not authenticated",
+      MustLoginToSeePayments: "You must log in to see your payments",
+      ErrorLoadingPayments: "Error loading payments",
+      NoPaymentsRegisteredThisMonth: "No payments registered for this month",
+      CanStartAddingOne: "You can start by adding one from the button below.",
+      DaysAgo: "Overdue by",
+      Day: "day",
+      Days: "days",
+      Tomorrow: "Tomorrow",
+      InDays: "In",
+      InDaysPlural: "days",
+      GeneralTotal: "General Total:",
+      PendingPayments: "Pending:",
+      PaidPayments: "Paid:",
+
+      // Payment Reminders
+      Reminders: "📅 Reminders",
+      NoPaymentReminders: "No pending payment reminders",
+      MustLoginToSeeReminders: "You must log in to see your reminders",
+      ErrorLoadingReminders: "Error loading reminders",
+      LoadingReminders: "Loading reminders...",
+      TotalPaymentsPending: "Total pending payments:",
+      TotalPaymentsColon: "Total Payments:",
+
+      // Payment Actions
+      Success: "Success",
+      MarkedAsPaid: "marked as paid",
+      Error: "Error",
+      CouldNotMarkAsPaid: "Could not mark the payment as paid",
+      DeletePayment: "Delete Payment",
+      SureToDeletePayment: "Are you sure you want to delete the payment",
+      Deleted: "deleted",
+      CouldNotDeletePayment: "Could not delete the payment",
+
+      // Payment Card
+      PaymentColon: "Payment:",
     },
   },
 }
