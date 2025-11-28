@@ -6,6 +6,44 @@ import { initReactI18next } from "react-i18next"
 const resources = {
   es: {
     translation: {
+      home: {
+        title: "Organiza tus pagos fácilmente",
+        subtitle:
+          "Controla todas tus suscripciones y pagos recurrentes desde una sola app",
+
+        signUpButton: "Crear cuenta gratuita",
+        loginButton: "Iniciar sesión",
+
+        reminders:
+          "Recordatorios automáticos: Nunca olvides un pago importante",
+        categories:
+          "Visualiza por categoría: Organiza tus gastos de forma inteligente",
+        reports: "Reportes mensuales: Analiza tus patrones de gasto",
+
+        terms: "Términos",
+        privacy: "Privacidad",
+        support: "Soporte",
+        rights: "© 2024 CronoPay. Todos los derechos reservados.",
+      },
+      login: {
+        title: "Iniciar sesión",
+        subtitle: "Ingresa con tu correo y contraseña para continuar.",
+        continueWith: "o continúa con",
+        noAccount: "¿No tienes cuenta?",
+        signUp: "Regístrate",
+
+        emailPlaceholder: "Correo electrónico",
+        passwordPlaceholder: "Contraseña",
+        defaultError: "Ocurrió un error",
+      },
+      signup: {
+        title: "Crear cuenta",
+        subtitle: "Regístrate con tu correo para comenzar.",
+        namePlaceholder: "Nombre completo",
+        repeatPasswordPlaceholder: "Repite tu contraseña",
+        alreadyHaveAccount: "¿Ya tienes cuenta?",
+        button: "Registrarse",
+      },
       monthNames: [
         "Enero",
         "Febrero",
@@ -121,6 +159,42 @@ const resources = {
   },
   en: {
     translation: {
+      home: {
+        title: "Organize your payments easily",
+        subtitle:
+          "Manage all your subscriptions and recurring payments from a single app",
+
+        signUpButton: "Create free account",
+        loginButton: "Log in",
+
+        reminders: "Automatic reminders: Never forget an important payment",
+        categories: "View by category: Organize your expenses intelligently",
+        reports: "Monthly reports: Analyze your spending patterns",
+
+        terms: "Terms",
+        privacy: "Privacy",
+        support: "Support",
+        rights: "© 2024 CronoPay. All rights reserved.",
+      },
+      login: {
+        title: "Log in",
+        subtitle: "Enter your email and password to continue.",
+        continueWith: "or continue with",
+        noAccount: "Don't have an account?",
+        signUp: "Sign up",
+
+        emailPlaceholder: "Email address",
+        passwordPlaceholder: "Password",
+        defaultError: "An error occurred",
+      },
+      signup: {
+        title: "Create account",
+        subtitle: "Sign up with your email to get started.",
+        namePlaceholder: "Full name",
+        repeatPasswordPlaceholder: "Repeat your password",
+        alreadyHaveAccount: "Already have an account?",
+        button: "Sign up",
+      },
       monthNames: [
         "January",
         "February",
