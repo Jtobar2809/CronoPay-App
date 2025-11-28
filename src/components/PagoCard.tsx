@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { PagoWithRelations } from 'lib/api/pagos';
-import { useTema } from '@/hooks/useTema';
 import { PagoActions } from './PagoActions';
 
 interface PagoCardProps {
@@ -27,6 +26,14 @@ export const PagoCard: React.FC<PagoCardProps> = ({
   isDark,
 }) => {
   const { t } = useTranslation();
+  useEffect(() => {
+    try {
+      console.log('[PagoCard] render id:', pago?.id_pago, 'title:', pago?.titulo, 'estado:', pago?.estado);
+      console.count('[PagoCard] render count');
+    } catch (e) {
+      console.warn('[PagoCard] logging error', e);
+    }
+  }, [pago]);
   const isPaid = pago.estado === 'Pagado';
 
   const getPaymentStatusBadge = () => {
@@ -58,7 +65,9 @@ export const PagoCard: React.FC<PagoCardProps> = ({
     <View style={[
       styles.pagoCard,
       isDark ? styles.pagoCardDark : styles.pagoCardLight,
-      isPaid && (isDark ? styles.pagoCardPaidDark : styles.pagoCardPaid)
+      isPaid && (isDark ? styles.pagoCardPaidDark : styles.pagoCardPaid),
+      // Debug outline to ensure card box is visible during investigation
+      __DEV__ ? styles.debugOutline : undefined,
     ]}>
       <View style={styles.pagoInfo}>
         <View style={styles.pagoHeader}>
@@ -120,28 +129,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
     marginBottom: 8,
+    minHeight: 56,
   },
   pagoCardLight: {
     backgroundColor: '#ffffff',
     borderColor: '#e5e5e5',
   },
   pagoCardDark: {
-    backgroundColor: '#171717',
+    backgroundColor: '#0B1220',
     borderColor: '#404040',
   },
   pagoCardPaid: {
     backgroundColor: '#f0fdf4',
     borderColor: '#bbf7d0',
-    opacity: 0.7,
+    opacity: 1,
   },
   pagoCardPaidDark: {
-    backgroundColor: 'rgba(22, 163, 74, 0.1)',
-    borderColor: 'rgba(74, 222, 128, 0.3)',
-    opacity: 0.7,
+    backgroundColor: 'rgba(22, 163, 74, 0.08)',
+    borderColor: 'rgba(74, 222, 128, 0.18)',
+    opacity: 1,
+  },
+  debugOutline: {
+    borderWidth: 2,
+    borderColor: 'rgba(255,0,0,0.6)'
   },
   pagoInfo: {
     flex: 1,
@@ -166,7 +181,7 @@ const styles = StyleSheet.create({
   },
   pagoTitlePaid: {
     textDecorationLine: 'line-through',
-    color: '#737373',
+    color: '#9ca3af',
   },
   pagoAmount: {
     fontSize: 14,
@@ -180,7 +195,7 @@ const styles = StyleSheet.create({
   },
   pagoAmountPaid: {
     textDecorationLine: 'line-through',
-    color: '#737373',
+    color: '#9ca3af',
   },
   pagoMetaRow: {
     flexDirection: 'row',
@@ -206,6 +221,7 @@ const styles = StyleSheet.create({
   metaRight: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
   },
   badgeStatusPending: {
     backgroundColor: '#fed7aa',

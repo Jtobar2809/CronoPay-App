@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -33,6 +33,9 @@ export default function PagosScreen() {
 
   const { session } = useAuth();
   const userId = session?.user?.id ?? null;
+  useEffect(() => {
+    console.log('[PagosScreen] session present:', !!session, 'userId:', userId);
+  }, [session, userId]);
 
   const { data: pagos, isLoading, error, refetch } = usePagos(userId);
 
@@ -84,17 +87,10 @@ export default function PagosScreen() {
   const month = currentDate.getMonth();
 
   const pagosFiltrados = useMemo(() => {
-    if (!optimisticPagos || !Array.isArray(optimisticPagos) || isLoading) {
-      return [];
-    }
+    if (!optimisticPagos || !Array.isArray(optimisticPagos)) return [];
 
-    // Filtrar solo los pagos del mes actual, igual que en el calendario
-    const filtered = optimisticPagos.filter((pago) => {
-      const pagoDate = new Date(pago.fecha_vencimiento);
-      return pagoDate.getFullYear() === year && pagoDate.getMonth() === month;
-    });
-
-    return filtered;
+    // Mostrar TODOS los pagos disponibles (no filtrar por mes)
+    return optimisticPagos;
   }, [optimisticPagos, isLoading, year, month]);
 
   // Agrupación exacta como en PaymentCalendar
@@ -145,6 +141,19 @@ export default function PagosScreen() {
       return acc;
     }, {} as Record<string, DayReminder[]>);
   }, [calendarReminders]);
+
+  useEffect(() => {
+    try {
+      console.log('[PagosScreen] optimisticPagos count:', optimisticPagos?.length ?? 0);
+      if (optimisticPagos && optimisticPagos.length > 0) {
+        console.log('[PagosScreen] optimisticPagos sample:', JSON.stringify(optimisticPagos[0]));
+      }
+      console.log('[PagosScreen] calendarReminders count:', calendarReminders.length, 'remindersByMonth keys:', Object.keys(remindersByMonth).length);
+      console.log('[PagosScreen] raw pagos (from usePagos):', JSON.stringify(pagos?.slice(0,5) ?? []));
+    } catch (e) {
+      console.warn('[PagosScreen] error logging pagos:', e);
+    }
+  }, [optimisticPagos, calendarReminders, remindersByMonth]);
 
   // Funciones auxiliares
   const formatCurrency = (amount: number) => {
@@ -261,20 +270,21 @@ export default function PagosScreen() {
     return {
       container: {
         flex: 1,
-        backgroundColor: isDark ? "#0a0a0a" : "#f5f5f5",
+        backgroundColor: isDark ? "#0f172b" : "#f5f5f5",
       },
       card: {
-        backgroundColor: isDark ? "#171717" : "#ffffff",
+        backgroundColor: isDark ? "#0B1220" : "#ffffff",
         borderRadius: 12,
         padding: 16,
         margin: 16,
+        flex: 1,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
         borderWidth: 1,
-        borderColor: isDark ? "#262626" : "#e5e5e5",
+        borderColor: isDark ? "#101828" : "#e5e5e5",
       },
       title: {
         fontSize: 24,
@@ -416,7 +426,7 @@ export default function PagosScreen() {
     );
   }
 
-  if (!pagosFiltrados || calendarReminders.length === 0) {
+  if ((!optimisticPagos || optimisticPagos.length === 0) && !isLoading) {
     return (
       <SafeAreaView style={dynamicStyles.container}>
         <View style={styles.mainContainer}>
@@ -472,7 +482,7 @@ export default function PagosScreen() {
 
           <ScrollView
             style={styles.remindersScrollContainer}
-            contentContainerStyle={{ paddingBottom: 100 }}
+                    contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
             nestedScrollEnabled={true}
             showsVerticalScrollIndicator={false}
             refreshControl={
@@ -480,62 +490,84 @@ export default function PagosScreen() {
             }
           >
             <View style={styles.remindersContainer}>
-              {Object.entries(remindersByMonth).map(([month, reminders]) => (
-                <View key={month} style={styles.monthSection}>
-                  <Text style={dynamicStyles.monthTitle}>{month}</Text>
+              {Object.keys(remindersByMonth).length > 0 ? (
+                Object.entries(remindersByMonth).map(([month, reminders]) => (
+                  <View key={month} style={styles.monthSection}>
+                    <Text style={dynamicStyles.monthTitle}>{month}</Text>
 
-                  {reminders.map((reminder, index) => {
-                    const hasPendingPayments = reminder.pagos.some(p => p.estado === 'Pendiente');
-                    const daysBadge = getDaysBadge(reminder.fecha, hasPendingPayments);
+                    {reminders.map((reminder, index) => {
+                      const hasPendingPayments = reminder.pagos.some(p => p.estado === 'Pendiente');
+                      const daysBadge = getDaysBadge(reminder.fecha, hasPendingPayments);
 
-                    return (
-                      <View
-                        key={`${reminder.fecha}-${index}`}
-                        style={getCardStyle(reminder.fecha, hasPendingPayments)}
-                      >
-                        <View style={styles.reminderHeader}>
-                          <View style={styles.reminderHeaderLeft}>
-                            <Text style={dynamicStyles.dateText}>
-                              {formatDate(reminder.fecha)}
-                            </Text>
-                            <View style={styles.badgeRow}>
-                              {daysBadge && (
-                                <View style={daysBadge.badgeStyle}>
-                                  <Text style={daysBadge.textStyle}>
-                                    {daysBadge.text}
-                                  </Text>
-                                </View>
-                              )}
-                              <Text style={dynamicStyles.countText}>
-                                {reminder.pagos.length} pago{reminder.pagos.length !== 1 ? 's' : ''}
+                      return (
+                        <View
+                          key={`${reminder.fecha}-${index}`}
+                          style={getCardStyle(reminder.fecha, hasPendingPayments)}
+                        >
+                          <View style={styles.reminderHeader}>
+                            <View style={styles.reminderHeaderLeft}>
+                              <Text style={dynamicStyles.dateText}>
+                                {formatDate(reminder.fecha)}
+                              </Text>
+                              <View style={styles.badgeRow}>
+                                {daysBadge && (
+                                  <View style={daysBadge.badgeStyle}>
+                                    <Text style={daysBadge.textStyle}>
+                                      {daysBadge.text}
+                                    </Text>
+                                  </View>
+                                )}
+                                <Text style={dynamicStyles.countText}>
+                                  {reminder.pagos.length} pago{reminder.pagos.length !== 1 ? 's' : ''}
+                                </Text>
+                              </View>
+                            </View>
+
+                            <View style={styles.totalContainer}>
+                              <Text style={dynamicStyles.totalText}>
+                                {formatCurrency(reminder.totalDia)}
                               </Text>
                             </View>
                           </View>
 
-                          <View style={styles.totalContainer}>
-                            <Text style={dynamicStyles.totalText}>
-                              {formatCurrency(reminder.totalDia)}
-                            </Text>
+                          <View style={styles.pagosContainer}>
+                            {reminder.pagos.map((pago, pagoIndex) => {
+                              try { console.log('[PagosScreen] mapping reminder.pagos', { fecha: reminder.fecha, pagoIndex, id_pago: pago?.id_pago, titulo: pago?.titulo }); } catch(e){}
+                              return (
+                                <PagoCard
+                                  key={`${pago.id_pago ?? 'noid'}-${pagoIndex}`}
+                                  pago={pago}
+                                  onMarkAsPaid={optimisticMarkAsPaid}
+                                  onDelete={optimisticDeletePago}
+                                  loadingAction={loadingAction}
+                                  isDark={isDark}
+                                />
+                              )
+                            })}
                           </View>
                         </View>
-
-                        <View style={styles.pagosContainer}>
-                          {reminder.pagos.map((pago, pagoIndex) => (
-                            <PagoCard
-                              key={`${pago.id_pago}-${pagoIndex}`}
-                              pago={pago}
-                              onMarkAsPaid={optimisticMarkAsPaid}
-                              onDelete={optimisticDeletePago}
-                              loadingAction={loadingAction}
-                              isDark={isDark}
-                            />
-                          ))}
-                        </View>
+                      );
+                    })}
+                  </View>
+                ))
+                ) : (
+                optimisticPagos.map((pago, idx) => {
+                  try { console.log('[PagosScreen] mapping optimisticPagos', { idx, id_pago: pago?.id_pago, titulo: pago?.titulo }); } catch(e){}
+                  return (
+                    <View key={`${pago.id_pago ?? 'noid'}-${idx}`} style={styles.monthSection}>
+                      <View style={isDark ? styles.reminderCardDark : styles.reminderCard}>
+                        <PagoCard
+                          pago={pago}
+                          onMarkAsPaid={optimisticMarkAsPaid}
+                          onDelete={optimisticDeletePago}
+                          loadingAction={loadingAction}
+                          isDark={isDark}
+                        />
                       </View>
-                    );
-                  })}
-                </View>
-              ))}
+                    </View>
+                  )
+                })
+              )}
             </View>
           </ScrollView>
 
@@ -609,7 +641,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   remindersScrollContainer: {
-    maxHeight: 450,
+    flex: 1,
+    minHeight: 220,
   },
   remindersContainer: {
     gap: 0,
@@ -626,7 +659,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     borderWidth: 1,
-    backgroundColor: '#262626',
+    backgroundColor: '#1e293b',
     borderColor: '#404040',
     marginBottom: 12,
   },
@@ -643,7 +676,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#ef4444',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: "#2b1212",
     marginBottom: 12,
   },
   reminderCardToday: {
@@ -659,7 +692,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#3b82f6',
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: "#0B1220",
     marginBottom: 12,
   },
   reminderCardWeek: {
@@ -675,7 +708,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#fb923c',
-    backgroundColor: 'rgba(251, 146, 60, 0.1)',
+    backgroundColor: "#0B1220",
     marginBottom: 12,
   },
   reminderHeader: {
@@ -730,7 +763,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   badgeTomorrowDark: {
-    backgroundColor: '#404040',
+    backgroundColor: '#0f172b',
     borderWidth: 1,
     borderColor: '#525252',
     paddingHorizontal: 8,
@@ -753,11 +786,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   badgeDefault: {
-    backgroundColor: '#e5e5e5',
-    borderWidth: 1,
-    borderColor: '#d4d4d4',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    backgroundColor: "#0B1220",
     borderRadius: 4,
     alignSelf: 'flex-start',
   },
@@ -780,13 +809,14 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   badgeInfoDark: {
-    backgroundColor: '#404040',
+    backgroundColor: '#053345',
     borderWidth: 1,
-    borderColor: '#525252',
+    borderColor: '#032e15',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
-    alignSelf: 'flex-start',
+    alignSelf: 'flex-end',
+    margin: 'auto',
   },
   totalContainer: {
     alignItems: 'flex-end',
