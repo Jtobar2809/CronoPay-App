@@ -15,10 +15,12 @@ export const usePagoActions = (onActionSuccess?: () => void) => {
 
       // Llamada real a Supabase
       await setPagoEstado(pago.id_pago, 'Pagado');
-
-      Alert.alert('Éxito', `Pago "${pago.titulo}" marcado como pagado`);
-
-
+      
+      Alert.alert(
+        t('Success'), 
+        `${t('PaymentColon')} "${pago.titulo}" ${t('MarkedAsPaid')}`
+      );
+      
       // Refrescar los datos
       if (onActionSuccess) {
         onActionSuccess();
@@ -47,24 +49,16 @@ export const usePagoActions = (onActionSuccess?: () => void) => {
           t('DeletePayment'),
           `${t('SureToDeletePayment')} "${pago.titulo}"?`,
           [
-            {
-              text: 'Cancelar',
+            { 
+              text: t('Cancel'), 
               style: 'cancel',
               onPress: () => {
                 setLoadingAction(null);
                 resolve(false);
               }
             },
-            {
-              text: 'Eliminar',
-              style: 'cancel',
-              onPress: () => {
-                setLoadingAction(null);
-                resolve(false);
-              }
-            },
-            {
-              text: t('DeletePayment'),
+            { 
+              text: t('DeletePayment'), 
               style: 'destructive',
               onPress: async () => {
                 try {
@@ -72,12 +66,12 @@ export const usePagoActions = (onActionSuccess?: () => void) => {
 
                   // Llamada real a Supabase
                   await deletePago(pago.id_pago);
-
+                  
                   Alert.alert(
                     t('Success'),
                     `${t('PaymentColon')} "${pago.titulo}" ${t('Deleted')}`
                   );
-
+                  
                   // Refrescar los datos
                   if (onActionSuccess) {
                     onActionSuccess();
